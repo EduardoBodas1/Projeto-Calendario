@@ -218,7 +218,12 @@ async function load() {
 }
 
 // ── Render ──
-function pct(d){ const dt=new Date(d+'T00:00:00'); return Math.max(0,Math.min(100,(dt-tStart)/86400000/tDays*100)); }
+// DEPOIS
+function pct(d){
+  const [y,m,day] = d.split('-').map(Number);
+  const dt = new Date(y, m-1, day); // sem UTC, usa horário local
+  return Math.max(0, Math.min(100, (dt-tStart)/86400000/tDays*100));
+}
 
 function render() {
   const q  = document.getElementById('search').value.toLowerCase();
