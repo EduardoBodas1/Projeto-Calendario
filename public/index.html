@@ -284,10 +284,10 @@ async function load() {
 }
 
 // ── Render ──
-function pct(d){
+function pct(d) {
   const [y,m,day] = d.split('-').map(Number);
-  const dt = new Date(y, m-1, day); // sem UTC, usa horário local
-  return Math.max(0, Math.min(100, (dt-tStart)/86400000/tDays*100));
+  const dt = new Date(y, m-1, day);
+  return (dt - tStart()) / 86400000 / tDays() * 100;
 }
 
 function render() {
