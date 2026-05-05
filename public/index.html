@@ -373,19 +373,31 @@ function openSegModal(pid, sid) {
 }
 
 async function saveSeg(pid, sid) {
-  const label=document.getElementById('m-label').value.trim();
-  const start_date=document.getElementById('m-start').value;
-  const end_date=document.getElementById('m-end').value;
-  const status=document.getElementById('m-status').value;
+  const label      = document.getElementById('m-label').value.trim();
+  const start_date = document.getElementById('m-start').value;
+  const end_date   = document.getElementById('m-end').value;
+  const status     = document.getElementById('m-status').value;
   if(!label||!start_date||!end_date) return;
   setSyncStatus('Salvando...');
   try {
     const p = projects.find(x=>x.id===pid);
+
+    // Normaliza datas vindas da API para YYYY-MM-DD
+    function fixDate(val) {
+      if (!val) return '';
+      const d = new Date(val);
+      return isNaN(d) ? val : d.toISOString().split('T')[0];
+    }
+
     if(sid) {
       const updated = await apiFetch(`/segments/${sid}`, {method:'PUT', body:JSON.stringify({label,start_date,end_date,status})});
-      p.segments = p.segments.map(s=>s.id===sid?updated:s);
+      updated.start_date = fixDate(updated.start_date);
+      updated.end_date   = fixDate(updated.end_date);
+      p.segments = p.segments.map(s=>s.id===sid ? updated : s);
     } else {
       const created = await apiFetch(`/projects/${pid}/segments`, {method:'POST', body:JSON.stringify({label,start_date,end_date,status})});
+      created.start_date = fixDate(created.start_date);
+      created.end_date   = fixDate(created.end_date);
       p.segments.push(created);
     }
     closeModal(); render(); toast('Bloco salvo.');
