@@ -20,7 +20,6 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* HEADER */
   .app-header {
     background: var(--surface); border-bottom: 1px solid var(--border);
     padding: 0 28px; height: 56px;
@@ -28,22 +27,16 @@
     position: sticky; top: 0; z-index: 50;
   }
   .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
-  .logo-icon {
-    width: 28px; height: 28px; background: var(--purple);
-    border-radius: 7px; display: flex; align-items: center; justify-content: center;
-  }
+  .logo-icon { width: 28px; height: 28px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
   .logo-icon svg { width: 16px; height: 16px; }
 
-  /* MAIN */
   .main { padding: 24px 28px; max-width: 1300px; margin: 0 auto; }
 
-  /* SUMMARY */
   .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
   .stat-card .label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
   .stat-card .value { font-size: 26px; font-weight: 600; line-height: 1; }
 
-  /* TOOLBAR */
   .toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
   .toolbar input[type=text] { flex: 1; min-width: 180px; }
   input[type=text], select {
@@ -57,7 +50,6 @@
     background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
     font-size: 13px; padding: 0 10px; outline: none; width: 100%;
   }
-
   .btn {
     height: 36px; padding: 0 16px; font-family: 'DM Sans', sans-serif; font-size: 13px;
     font-weight: 500; cursor: pointer; border-radius: var(--radius-sm);
@@ -70,21 +62,24 @@
   .btn-danger { background: var(--red-lt); color: var(--red-dk); border-color: rgba(226,75,74,.3); }
   .btn-danger:hover { background: #F7C1C1; }
   .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
+  .year-range { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .year-range select { width: 84px; }
 
-  /* PANEL */
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
   .months-header { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); }
   .label-col { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 8px 14px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .months-row { flex: 1; display: grid; grid-template-columns: repeat(12,1fr); }
-  .month-cell { font-size: 11px; font-weight: 500; color: var(--muted); text-align: center; padding: 8px 0; border-right: 1px solid var(--border); }
+  .months-row { flex: 1; display: grid; }
+  .month-cell { font-size: 11px; font-weight: 500; color: var(--muted); text-align: center; padding: 6px 0; border-right: 1px solid var(--border); line-height: 1.3; }
   .month-cell:last-child { border-right: none; }
   .month-cell.cur { color: var(--purple); font-weight: 600; }
+  .month-cell.year-boundary { border-left: 2px solid var(--border-md); }
 
-  /* ROWS */
   .row-wrap { border-top: 1px solid var(--border); }
   .row-wrap:first-child { border-top: none; }
-  .project-header { display: flex; align-items: center; background: var(--surface2); border-bottom: 1px solid var(--border); }
-  .project-name-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 6px 10px 6px 14px; display: flex; align-items: center; gap: 6px; }
+  .project-header { display: flex; align-items: center; background: var(--surface2); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .project-header:hover { background: #E8E6E0; }
+  .project-name-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 6px 10px; display: flex; align-items: center; gap: 5px; }
+  .collapse-arrow { font-size: 10px; color: var(--hint); flex-shrink: 0; transition: transform .2s; display: inline-block; }
   .project-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
   .icon-btn { background: none; border: none; cursor: pointer; color: var(--hint); font-size: 13px; padding: 2px 3px; border-radius: 4px; opacity: 0; transition: opacity .1s, color .1s; flex-shrink: 0; line-height: 1; }
   .project-header:hover .icon-btn { opacity: 1; }
@@ -99,13 +94,30 @@
   .seg-edit-btn:hover { color: var(--purple); }
   .segment-grid { flex: 1; position: relative; height: 38px; }
 
-  .grid-lines { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12,1fr); pointer-events: none; }
+  .grid-lines { position: absolute; inset: 0; display: grid; pointer-events: none; }
   .grid-line { border-right: 1px solid var(--border); }
   .grid-line:last-child { border-right: none; }
   .grid-line.cur-col { background: rgba(83,74,183,.035); }
+  .grid-line.year-start { border-left: 2px solid var(--border-md); }
   .today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--red); opacity: .7; z-index: 5; pointer-events: none; }
-  .bar { position: absolute; height: 24px; top: 7px; border-radius: 5px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; transition: filter .12s; }
+
+  .bar {
+    position: absolute; height: 24px; top: 7px; border-radius: 5px;
+    display: flex; align-items: center; padding: 0 8px;
+    font-size: 11px; font-weight: 500; cursor: pointer;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    z-index: 3; transition: filter .12s;
+  }
   .bar:hover { filter: brightness(.9); }
+  .bar-continues-left  { border-radius: 0 5px 5px 0; }
+  .bar-continues-right { border-radius: 5px 0 0 5px; }
+  .bar-continues-both  { border-radius: 0; }
+  .bar::before { content: '◀'; font-size: 9px; opacity: .8; margin-right: 3px; display: none; flex-shrink: 0; }
+  .bar::after  { content: '▶'; font-size: 9px; opacity: .8; margin-left: auto; padding-left: 4px; display: none; flex-shrink: 0; }
+  .bar-continues-left::before  { display: inline; }
+  .bar-continues-right::after  { display: inline; }
+  .bar-continues-both::before  { display: inline; }
+  .bar-continues-both::after   { display: inline; }
 
   .s-andamento { background: #AFA9EC; color: #26215C; }
   .s-planejado  { background: #85B7EB; color: #042C53; }
@@ -116,16 +128,13 @@
   .add-seg-btn { margin: 4px 0 4px 22px; height: 22px; padding: 0 10px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px dashed var(--border-md); background: transparent; color: var(--hint); font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 4px; }
   .add-seg-btn:hover { color: var(--purple); border-color: var(--purple); background: rgba(83,74,183,.05); }
 
-  /* LEGEND */
   .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 0 0; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
   .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
-  /* LOADING / ERROR */
   .state-msg { padding: 48px; text-align: center; font-size: 14px; color: var(--hint); }
   .error-msg { padding: 20px; text-align: center; font-size: 13px; color: var(--red); background: var(--red-lt); border-radius: var(--radius-sm); margin-bottom: 14px; }
 
-  /* MODAL */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,15,.45); z-index: 200; align-items: center; justify-content: center; }
   .overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border-md); box-shadow: 0 8px 40px rgba(0,0,0,.18); padding: 28px; width: 400px; max-width: 94vw; }
@@ -136,27 +145,9 @@
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
 
-  /* TOAST */
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #F7F6F3; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 999; }
   .toast.show { opacity: 1; }
   .toast.error { background: var(--red); }
-
-  .bar-continues-left  { border-radius: 0 5px 5px 0; }
-  .bar-continues-right { border-radius: 5px 0 0 5px; }
-  .bar-continues-both  { border-radius: 0; }
-
-  .bar::before, .bar::after {
-    content: '▶';
-    font-size: 9px;
-    opacity: 0.7;
-    flex-shrink: 0;
-  }
-  .bar::before { display: none; margin-right: 3px; content: '◀'; }
-  .bar::after  { display: none; margin-left: auto; padding-left: 4px; }
-  .bar-continues-left::before  { display: inline; }
-  .bar-continues-right::after  { display: inline; }
-  .bar-continues-both::before  { display: inline; }
-  .bar-continues-both::after   { display: inline; }
 </style>
 </head>
 <body>
@@ -174,7 +165,6 @@
 <main class="main">
   <div class="summary-grid" id="summary"></div>
   <div id="error-banner"></div>
-  <!-- DEPOIS -->
   <div class="toolbar">
     <input type="text" id="search" placeholder="🔍 Buscar projeto..." oninput="render()">
     <select id="fstatus" onchange="render()">
@@ -184,10 +174,10 @@
       <option value="concluído">Concluído</option>
       <option value="atrasado">Atrasado</option>
     </select>
-    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">
-      <select id="year-start" onchange="onYearChange('start')" style="width:90px"></select>
+    <div class="year-range">
+      <select id="year-start" onchange="onYearChange('start')"></select>
       <span>→</span>
-      <select id="year-end" onchange="onYearChange('end')" style="width:90px"></select>
+      <select id="year-end" onchange="onYearChange('end')"></select>
     </div>
     <button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button>
   </div>
@@ -198,6 +188,7 @@
     <span class="legend-item"><span class="legend-dot" style="background:#85B7EB"></span>Planejado</span>
     <span class="legend-item"><span class="legend-dot" style="background:#F09595"></span>Atrasado</span>
     <span class="legend-item"><span style="width:3px;height:12px;background:#E24B4A;opacity:.7;border-radius:2px;display:inline-block"></span>Hoje</span>
+    <span class="legend-item"><span style="font-size:10px">◀▶</span>Continua fora do período</span>
   </div>
 </main>
 
@@ -212,17 +203,19 @@ const today = new Date();
 const Y = today.getFullYear();
 const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const SC = {'em andamento':'s-andamento','planejado':'s-planejado','concluído':'s-concluido','atrasado':'s-atrasado'};
-// DEPOIS
-const MIN_YEAR = today.getFullYear() - 3;
-const MAX_YEAR = today.getFullYear() + 5;
+const MIN_YEAR = Y - 3;
+const MAX_YEAR = Y + 5;
 
-let viewStart = today.getFullYear();
-let viewEnd   = today.getFullYear();
+let viewStart = Y;
+let viewEnd   = Y;
+let projects  = [];
+let collapsed = new Set();
+let initialCollapseSet = false;
 
+// ── Year selectors ──
 function initYearSelectors() {
-  const selS = document.getElementById('year-start');
-  const selE = document.getElementById('year-end');
-  [selS, selE].forEach(sel => {
+  ['year-start','year-end'].forEach(id => {
+    const sel = document.getElementById(id);
     sel.innerHTML = '';
     for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
       const o = document.createElement('option');
@@ -230,37 +223,35 @@ function initYearSelectors() {
       sel.appendChild(o);
     }
   });
-  selS.value = viewStart;
-  selE.value = viewEnd;
+  document.getElementById('year-start').value = viewStart;
+  document.getElementById('year-end').value   = viewEnd;
 }
 
 function onYearChange(which) {
-  const s = parseInt(document.getElementById('year-start').value);
-  const e = parseInt(document.getElementById('year-end').value);
-  if (which === 'start' && s > viewEnd) {
-    document.getElementById('year-end').value = s;
-    viewEnd = s;
-  }
-  if (which === 'end' && e < viewStart) {
-    document.getElementById('year-start').value = e;
-    viewStart = e;
-  }
-  viewStart = parseInt(document.getElementById('year-start').value);
-  viewEnd   = parseInt(document.getElementById('year-end').value);
+  let s = parseInt(document.getElementById('year-start').value);
+  let e = parseInt(document.getElementById('year-end').value);
+  if (which === 'start' && s > e) { e = s; document.getElementById('year-end').value = e; }
+  if (which === 'end'   && e < s) { s = e; document.getElementById('year-start').value = s; }
+  viewStart = s; viewEnd = e;
   render();
 }
 
+// ── Time helpers ──
 function tStart() { return new Date(viewStart, 0, 1); }
 function tEnd()   { return new Date(viewEnd, 11, 31); }
 function tDays()  { return (tEnd() - tStart()) / 86400000; }
 
 function pct(d) {
-  const [y,m,day] = d.split('-').map(Number);
-  const dt = new Date(y, m-1, day);
+  const [y, m, day] = d.split('-').map(Number);
+  const dt = new Date(y, m - 1, day);
   return (dt - tStart()) / 86400000 / tDays() * 100;
 }
 
-let projects = [];
+function fixDate(val) {
+  if (!val) return '';
+  const d = new Date(val);
+  return isNaN(d) ? val : d.toISOString().split('T')[0];
+}
 
 // ── API helpers ──
 async function apiFetch(path, opts={}) {
@@ -274,126 +265,142 @@ async function load() {
   setSyncStatus('Sincronizando...');
   try {
     projects = await apiFetch('/projects');
+    if (!initialCollapseSet) {
+      projects.forEach(p => collapsed.add(p.id));
+      initialCollapseSet = true;
+    }
     render();
     setSyncStatus('');
   } catch(e) {
-    showError('Não foi possível conectar à API: '+e.message);
+    showError('Não foi possível conectar à API: ' + e.message);
     setSyncStatus('⚠ Offline');
     document.getElementById('panel').innerHTML = '<div class="state-msg">Erro ao carregar projetos.</div>';
   }
 }
 
-// ── Render ──
-function pct(d) {
-  const [y,m,day] = d.split('-').map(Number);
-  const dt = new Date(y, m-1, day);
-  return (dt - tStart()) / 86400000 / tDays() * 100;
+// ── Toggle collapse ──
+function toggleProject(pid) {
+  if (collapsed.has(pid)) collapsed.delete(pid);
+  else collapsed.add(pid);
+  render();
 }
 
+// ── Render ──
 function render() {
   const q  = document.getElementById('search').value.toLowerCase();
   const fs = document.getElementById('fstatus').value;
   const filtered = projects.filter(p => {
-    if(q && !p.name.toLowerCase().includes(q)) return false;
-    if(fs && !p.segments.some(s=>s.status===fs)) return false;
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    if (fs && !p.segments.some(s => s.status === fs)) return false;
     return true;
   });
 
   renderSummary(filtered);
 
-  // Gera colunas do cabeçalho (meses × anos)
-  const numYears = viewEnd - viewStart + 1;
+  const numYears  = viewEnd - viewStart + 1;
   const totalCols = numYears * 12;
-  const curM = today.getMonth();
   const curY = today.getFullYear();
+  const curM = today.getMonth();
+  const gridStyle = `grid-template-columns:repeat(${totalCols},1fr)`;
 
+  // Cabeçalho de meses
   let monthCells = '';
   for (let y = viewStart; y <= viewEnd; y++) {
     for (let m = 0; m < 12; m++) {
       const isCur = y === curY && m === curM;
-      monthCells += `<div class="month-cell${isCur?' cur':''}" style="min-width:0">${MONTHS[m]}${numYears>1?'<br><span style="font-size:9px;opacity:.6">'+y+'</span>':''}</div>`;
+      const isYearBoundary = m === 0 && y > viewStart;
+      monthCells += `<div class="month-cell${isCur?' cur':''}${isYearBoundary?' year-boundary':''}">${MONTHS[m]}${numYears > 1 ? `<br><span style="font-size:9px;opacity:.55">${y}</span>` : ''}</div>`;
     }
   }
 
-  const gridLines = Array.from({length: totalCols}, (_,i) => {
-    const y = viewStart + Math.floor(i/12);
+  // Grid lines
+  const gridLines = Array.from({length: totalCols}, (_, i) => {
+    const y = viewStart + Math.floor(i / 12);
     const m = i % 12;
     const isCur = y === curY && m === curM;
-    // linha mais grossa no início de cada ano
-    const isYearBoundary = m === 0 && i > 0;
-    return `<div class="grid-line${isCur?' cur-col':''}" style="${isYearBoundary?'border-right:1px solid var(--border-md)':''}"></div>`;
+    const isYearStart = m === 0 && y > viewStart;
+    return `<div class="grid-line${isCur?' cur-col':''}${isYearStart?' year-start':''}"></div>`;
   }).join('');
 
+  // Linha de hoje
   const todayRaw = (today - tStart()) / 86400000 / tDays() * 100;
-  const tl = (todayRaw>=0 && todayRaw<=100)
+  const tl = (todayRaw >= 0 && todayRaw <= 100)
     ? `<div class="today-line" style="left:${todayRaw.toFixed(2)}%"></div>` : '';
 
   let html = `<div class="months-header">
     <div class="label-col">Projeto</div>
-    <div class="months-row" style="grid-template-columns:repeat(${totalCols},1fr)">${monthCells}</div>
+    <div class="months-row" style="${gridStyle}">${monthCells}</div>
   </div>`;
 
-  if(!filtered.length){
+  if (!filtered.length) {
     html += '<div class="state-msg">Nenhum projeto encontrado.</div>';
-    document.getElementById('panel').innerHTML = html; return;
+    document.getElementById('panel').innerHTML = html;
+    return;
   }
 
   filtered.forEach(p => {
-    const segs = fs ? p.segments.filter(s=>s.status===fs) : p.segments;
+    const isCollapsed = collapsed.has(p.id);
+    const segs = fs ? p.segments.filter(s => s.status === fs) : p.segments;
+
     html += `<div class="row-wrap">
-      <div class="project-header">
+      <div class="project-header" onclick="toggleProject(${p.id})">
         <div class="project-name-cell">
+          <span class="collapse-arrow" style="transform:rotate(${isCollapsed ? '0':'90'}deg)">▶</span>
           <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
-          <button class="icon-btn" onclick="openProjectModal(${p.id})">✎</button>
-          <button class="icon-btn" onclick="deleteProject(${p.id})">✕</button>
+          <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})" title="Renomear">✎</button>
+          <button class="icon-btn" onclick="event.stopPropagation();deleteProject(${p.id})" title="Excluir">✕</button>
         </div>
-        <div class="project-header-grid" style="--total-cols:${totalCols}">
-          <div class="grid-lines" style="grid-template-columns:repeat(${totalCols},1fr)">${gridLines}</div>${tl}
-        </div>
-      </div>`;
-
-    segs.forEach(s => {
-      const rawL = pct(s.start_date);
-      const rawR = pct(s.end_date);
-      const sl = Math.max(0, rawL);
-      const er = Math.min(100, rawR);
-      const w  = Math.max(er - sl, 0.8);
-
-      // bloco fora do período visível — não renderiza
-      if (rawR < 0 || rawL > 100) return;
-
-      const clipsLeft  = rawL < 0;
-      const clipsRight = rawR > 100;
-      let radiusClass = '';
-      if (clipsLeft && clipsRight) radiusClass = 'bar-continues-both';
-      else if (clipsLeft)          radiusClass = 'bar-continues-left';
-      else if (clipsRight)         radiusClass = 'bar-continues-right';
-
-      html += `<div class="segment-row">
-        <div class="segment-label-cell">
-          <span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span>
-          <button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button>
-        </div>
-        <div class="segment-grid">
-          <div class="grid-lines" style="grid-template-columns:repeat(${totalCols},1fr)">${gridLines}</div>${tl}
-          <div class="bar ${SC[s.status]||'s-planejado'} ${radiusClass}"
-            style="left:${sl.toFixed(2)}%;width:${w.toFixed(2)}%"
-            onclick="openSegModal(${p.id},${s.id})"
-            title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
+        <div class="project-header-grid">
+          <div class="grid-lines" style="${gridStyle}">${gridLines}</div>${tl}
         </div>
       </div>`;
-    });
 
-    html += `<div class="add-seg-row">
-      <button class="add-seg-btn" onclick="openSegModal(${p.id},null)">+ adicionar bloco</button>
-    </div></div>`;
+    if (!isCollapsed) {
+      segs.forEach(s => {
+        const rawL = pct(s.start_date);
+        const rawR = pct(s.end_date);
+
+        if (rawR < 0 || rawL > 100) return;
+
+        const sl = Math.max(0, rawL);
+        const er = Math.min(100, rawR);
+        const w  = Math.max(er - sl, 0.5);
+
+        const clipsLeft  = rawL < 0;
+        const clipsRight = rawR > 100;
+        let radiusClass = '';
+        if      (clipsLeft && clipsRight) radiusClass = 'bar-continues-both';
+        else if (clipsLeft)               radiusClass = 'bar-continues-left';
+        else if (clipsRight)              radiusClass = 'bar-continues-right';
+
+        html += `<div class="segment-row">
+          <div class="segment-label-cell">
+            <span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span>
+            <button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button>
+          </div>
+          <div class="segment-grid">
+            <div class="grid-lines" style="${gridStyle}">${gridLines}</div>${tl}
+            <div class="bar ${SC[s.status]||'s-planejado'} ${radiusClass}"
+              style="left:${sl.toFixed(3)}%;width:${w.toFixed(3)}%"
+              onclick="openSegModal(${p.id},${s.id})"
+              title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
+          </div>
+        </div>`;
+      });
+
+      html += `<div class="add-seg-row">
+        <button class="add-seg-btn" onclick="openSegModal(${p.id},null)">+ adicionar bloco</button>
+      </div>`;
+    }
+
+    html += `</div>`;
   });
 
   document.getElementById('panel').innerHTML = html;
 }
 
 function renderSummary(list) {
-  const all = list.flatMap(p=>p.segments);
+  const all = list.flatMap(p => p.segments);
   document.getElementById('summary').innerHTML = `
     <div class="stat-card"><div class="label">Projetos</div><div class="value">${list.length}</div></div>
     <div class="stat-card"><div class="label">Em andamento</div><div class="value" style="color:var(--purple)">${all.filter(s=>s.status==='em andamento').length}</div></div>
@@ -404,10 +411,10 @@ function renderSummary(list) {
 
 // ── PROJECT MODAL ──
 function openProjectModal(pid) {
-  const p = pid ? projects.find(x=>x.id===pid) : null;
-  modal(`${p?'Renomear':'Novo'} projeto`,`
+  const p = pid ? projects.find(x => x.id === pid) : null;
+  modal(`${p ? 'Renomear' : 'Novo'} projeto`, `
     <div class="field"><label>Nome do projeto</label>
-      <input type="text" id="m-name" value="${p?esc(p.name):''}" placeholder="Ex: Lançamento do produto">
+      <input type="text" id="m-name" value="${p ? esc(p.name) : ''}" placeholder="Ex: Lançamento do produto">
     </div>`,
     `<div></div>
      <div style="display:flex;gap:8px">
@@ -415,20 +422,22 @@ function openProjectModal(pid) {
        <button class="btn btn-primary" onclick="saveProject(${pid||'null'})">Salvar</button>
      </div>`
   );
-  setTimeout(()=>document.getElementById('m-name').focus(),50);
+  setTimeout(() => document.getElementById('m-name').focus(), 50);
 }
 
 async function saveProject(pid) {
   const name = document.getElementById('m-name').value.trim();
-  if(!name) return;
+  if (!name) return;
   setSyncStatus('Salvando...');
   try {
-    if(pid) {
+    if (pid) {
       const updated = await apiFetch(`/projects/${pid}`, {method:'PUT', body:JSON.stringify({name})});
-      projects = projects.map(p=>p.id===pid ? {...p, name:updated.name} : p);
+      projects = projects.map(p => p.id === pid ? {...p, name: updated.name} : p);
     } else {
       const created = await apiFetch('/projects', {method:'POST', body:JSON.stringify({name})});
+      created.segments = [];
       projects.push(created);
+      collapsed.add(created.id);
     }
     closeModal(); render(); toast('Projeto salvo.');
   } catch(e) { toast(e.message, true); }
@@ -436,11 +445,12 @@ async function saveProject(pid) {
 }
 
 async function deleteProject(pid) {
-  if(!confirm('Excluir este projeto e todos os seus blocos?')) return;
+  if (!confirm('Excluir este projeto e todos os seus blocos?')) return;
   setSyncStatus('Salvando...');
   try {
     await apiFetch(`/projects/${pid}`, {method:'DELETE'});
-    projects = projects.filter(p=>p.id!==pid);
+    projects = projects.filter(p => p.id !== pid);
+    collapsed.delete(pid);
     render(); toast('Projeto excluído.');
   } catch(e) { toast(e.message, true); }
   setSyncStatus('');
@@ -448,23 +458,14 @@ async function deleteProject(pid) {
 
 // ── SEGMENT MODAL ──
 function openSegModal(pid, sid) {
-  const p = projects.find(x=>x.id===pid);
-  const s = sid ? p.segments.find(x=>x.id===sid) : null;
+  const p = projects.find(x => x.id === pid);
+  const s = sid ? p.segments.find(x => x.id === sid) : null;
+  const startVal = s ? fixDate(s.start_date) : '';
+  const endVal   = s ? fixDate(s.end_date)   : '';
 
-  // Converte qualquer formato de data para YYYY-MM-DD
-  function toInputDate(val) {
-    if (!val) return '';
-    const d = new Date(val);
-    if (isNaN(d)) return '';
-    return d.toISOString().split('T')[0];
-  }
-
-  const startVal = s ? toInputDate(s.start_date) : '';
-  const endVal   = s ? toInputDate(s.end_date)   : '';
-
-  modal(`${s?'Editar':'Novo'} bloco${s?'':' — '+esc(p.name)}`,`
+  modal(`${s ? 'Editar' : 'Novo'} bloco${s ? '' : ' — ' + esc(p.name)}`, `
     <div class="field"><label>Rótulo</label>
-      <input type="text" id="m-label" value="${s?esc(s.label):''}" placeholder="Ex: Sprint 1, Revisão, Fase 2...">
+      <input type="text" id="m-label" value="${s ? esc(s.label) : ''}" placeholder="Ex: Sprint 1, Revisão, Fase 2...">
     </div>
     <div class="field-row">
       <div class="field"><label>Início</label><input type="date" id="m-start" value="${startVal}"></div>
@@ -472,16 +473,18 @@ function openSegModal(pid, sid) {
     </div>
     <div class="field"><label>Status</label>
       <select id="m-status">
-        ${['planejado','em andamento','concluído','atrasado'].map(v=>`<option value="${v}"${s&&s.status===v?' selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}
+        ${['planejado','em andamento','concluído','atrasado'].map(v =>
+          `<option value="${v}"${s && s.status === v ? ' selected' : ''}>${v[0].toUpperCase()+v.slice(1)}</option>`
+        ).join('')}
       </select>
     </div>`,
-    `<div>${s?`<button class="btn btn-danger btn-sm" onclick="deleteSeg(${pid},${sid})">Excluir bloco</button>`:'<span></span>'}</div>
+    `<div>${s ? `<button class="btn btn-danger btn-sm" onclick="deleteSeg(${pid},${sid})">Excluir bloco</button>` : '<span></span>'}</div>
      <div style="display:flex;gap:8px">
        <button class="btn" onclick="closeModal()">Cancelar</button>
        <button class="btn btn-primary" onclick="saveSeg(${pid},${sid||'null'})">Salvar</button>
      </div>`
   );
-  setTimeout(()=>document.getElementById('m-label').focus(),50);
+  setTimeout(() => document.getElementById('m-label').focus(), 50);
 }
 
 async function saveSeg(pid, sid) {
@@ -489,23 +492,15 @@ async function saveSeg(pid, sid) {
   const start_date = document.getElementById('m-start').value;
   const end_date   = document.getElementById('m-end').value;
   const status     = document.getElementById('m-status').value;
-  if(!label||!start_date||!end_date) return;
+  if (!label || !start_date || !end_date) return;
   setSyncStatus('Salvando...');
   try {
-    const p = projects.find(x=>x.id===pid);
-
-    // Normaliza datas vindas da API para YYYY-MM-DD
-    function fixDate(val) {
-      if (!val) return '';
-      const d = new Date(val);
-      return isNaN(d) ? val : d.toISOString().split('T')[0];
-    }
-
-    if(sid) {
+    const p = projects.find(x => x.id === pid);
+    if (sid) {
       const updated = await apiFetch(`/segments/${sid}`, {method:'PUT', body:JSON.stringify({label,start_date,end_date,status})});
       updated.start_date = fixDate(updated.start_date);
       updated.end_date   = fixDate(updated.end_date);
-      p.segments = p.segments.map(s=>s.id===sid ? updated : s);
+      p.segments = p.segments.map(s => s.id === sid ? updated : s);
     } else {
       const created = await apiFetch(`/projects/${pid}/segments`, {method:'POST', body:JSON.stringify({label,start_date,end_date,status})});
       created.start_date = fixDate(created.start_date);
@@ -521,8 +516,8 @@ async function deleteSeg(pid, sid) {
   setSyncStatus('Salvando...');
   try {
     await apiFetch(`/segments/${sid}`, {method:'DELETE'});
-    const p = projects.find(x=>x.id===pid);
-    p.segments = p.segments.filter(s=>s.id!==sid);
+    const p = projects.find(x => x.id === pid);
+    p.segments = p.segments.filter(s => s.id !== sid);
     closeModal(); render(); toast('Bloco excluído.');
   } catch(e) { toast(e.message, true); }
   setSyncStatus('');
@@ -538,20 +533,19 @@ function modal(title, body, actions) {
 function closeModal() { document.getElementById('overlay').classList.remove('open'); }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function toast(msg, err=false) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast'+(err?' error':''); t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
-function setSyncStatus(msg) { document.getElementById('sync-status').textContent=msg; }
+function setSyncStatus(msg) { document.getElementById('sync-status').textContent = msg; }
 function showError(msg) {
-  document.getElementById('error-banner').innerHTML = msg
-    ? `<div class="error-msg">${msg}</div>` : '';
+  document.getElementById('error-banner').innerHTML = msg ? `<div class="error-msg">${msg}</div>` : '';
 }
 
-document.getElementById('overlay').addEventListener('click', e=>{
-  if(e.target===document.getElementById('overlay')) closeModal();
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
 });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 initYearSelectors();
 load();
