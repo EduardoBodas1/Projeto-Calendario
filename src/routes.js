@@ -15,7 +15,17 @@ router.get('/projects', async (req, res) => {
     );
     const result = projects.map(p => ({
       ...p,
-      segments: segments.filter(s => s.project_id === p.id),
+      segments: segments
+        .filter(s => s.project_id === p.id)
+        .map(s => ({
+          ...s,
+          start_date: s.start_date instanceof Date
+            ? s.start_date.toISOString().split('T')[0]
+            : s.start_date,
+          end_date: s.end_date instanceof Date
+            ? s.end_date.toISOString().split('T')[0]
+            : s.end_date,
+        })),
     }));
     res.json(result);
   } catch (err) {

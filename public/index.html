@@ -338,13 +338,25 @@ async function deleteProject(pid) {
 function openSegModal(pid, sid) {
   const p = projects.find(x=>x.id===pid);
   const s = sid ? p.segments.find(x=>x.id===sid) : null;
+
+  // Converte qualquer formato de data para YYYY-MM-DD
+  function toInputDate(val) {
+    if (!val) return '';
+    const d = new Date(val);
+    if (isNaN(d)) return '';
+    return d.toISOString().split('T')[0];
+  }
+
+  const startVal = s ? toInputDate(s.start_date) : '';
+  const endVal   = s ? toInputDate(s.end_date)   : '';
+
   modal(`${s?'Editar':'Novo'} bloco${s?'':' — '+esc(p.name)}`,`
     <div class="field"><label>Rótulo</label>
       <input type="text" id="m-label" value="${s?esc(s.label):''}" placeholder="Ex: Sprint 1, Revisão, Fase 2...">
     </div>
     <div class="field-row">
-      <div class="field"><label>Início</label><input type="date" id="m-start" value="${s?s.start_date:''}"></div>
-      <div class="field"><label>Fim</label><input type="date" id="m-end" value="${s?s.end_date:''}"></div>
+      <div class="field"><label>Início</label><input type="date" id="m-start" value="${startVal}"></div>
+      <div class="field"><label>Fim</label><input type="date" id="m-end" value="${endVal}"></div>
     </div>
     <div class="field"><label>Status</label>
       <select id="m-status">
