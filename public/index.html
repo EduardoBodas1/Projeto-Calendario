@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendário de Projetos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F3; --surface: #FFFFFF; --surface2: #F0EEE9;
+    --border: rgba(0,0,0,0.09); --border-md: rgba(0,0,0,0.14);
+    --text: #1A1917; --muted: #6B6860; --hint: #A09E99;
+    --purple: #534AB7; --purple-lt: #EEEDFE; --purple-dk: #26215C;
+    --teal: #1D9E75; --teal-lt: #E1F5EE; --teal-dk: #04342C;
+    --blue: #378ADD; --blue-lt: #E6F1FB; --blue-dk: #042C53;
+    --red: #E24B4A; --red-lt: #FCEBEB; --red-dk: #501313;
+    --radius: 10px; --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .app-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .logo-icon {
+    width: 28px; height: 28px; background: var(--purple);
+    border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 16px; height: 16px; }
+
+  /* MAIN */
+  .main { padding: 24px 28px; max-width: 1300px; margin: 0 auto; }
+
+  /* SUMMARY */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat-card .label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 26px; font-weight: 600; line-height: 1; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .toolbar input[type=text] { flex: 1; min-width: 180px; }
+  input[type=text], select {
+    height: 36px; border: 1px solid var(--border-md); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 0 12px; outline: none;
+  }
+  input[type=text]:focus, select:focus { border-color: var(--purple); }
+  input[type=date] {
+    height: 38px; border: 1px solid var(--border-md); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 0 10px; outline: none; width: 100%;
+  }
+
+  .btn {
+    height: 36px; padding: 0 16px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 500; cursor: pointer; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-md); background: var(--surface); color: var(--text);
+    display: inline-flex; align-items: center; gap: 6px; transition: background .12s;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn-primary { background: var(--purple); color: var(--purple-lt); border-color: var(--purple); }
+  .btn-primary:hover { background: #3C3489; }
+  .btn-danger { background: var(--red-lt); color: var(--red-dk); border-color: rgba(226,75,74,.3); }
+  .btn-danger:hover { background: #F7C1C1; }
+  .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
+
+  /* PANEL */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .months-header { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .label-col { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 8px 14px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .months-row { flex: 1; display: grid; grid-template-columns: repeat(12,1fr); }
+  .month-cell { font-size: 11px; font-weight: 500; color: var(--muted); text-align: center; padding: 8px 0; border-right: 1px solid var(--border); }
+  .month-cell:last-child { border-right: none; }
+  .month-cell.cur { color: var(--purple); font-weight: 600; }
+
+  /* ROWS */
+  .row-wrap { border-top: 1px solid var(--border); }
+  .row-wrap:first-child { border-top: none; }
+  .project-header { display: flex; align-items: center; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .project-name-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 6px 10px 6px 14px; display: flex; align-items: center; gap: 6px; }
+  .project-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .icon-btn { background: none; border: none; cursor: pointer; color: var(--hint); font-size: 13px; padding: 2px 3px; border-radius: 4px; opacity: 0; transition: opacity .1s, color .1s; flex-shrink: 0; line-height: 1; }
+  .project-header:hover .icon-btn { opacity: 1; }
+  .icon-btn:hover { color: var(--purple); }
+  .project-header-grid { flex: 1; position: relative; height: 34px; }
+
+  .segment-row { display: flex; align-items: center; min-height: 38px; border-top: 1px solid var(--border); }
+  .segment-label-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 4px 10px 4px 22px; display: flex; align-items: center; gap: 4px; }
+  .segment-label { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .seg-edit-btn { background: none; border: none; cursor: pointer; color: var(--hint); font-size: 12px; padding: 2px; border-radius: 3px; opacity: 0; transition: opacity .1s, color .1s; flex-shrink: 0; }
+  .segment-row:hover .seg-edit-btn { opacity: 1; }
+  .seg-edit-btn:hover { color: var(--purple); }
+  .segment-grid { flex: 1; position: relative; height: 38px; }
+
+  .grid-lines { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12,1fr); pointer-events: none; }
+  .grid-line { border-right: 1px solid var(--border); }
+  .grid-line:last-child { border-right: none; }
+  .grid-line.cur-col { background: rgba(83,74,183,.035); }
+  .today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--red); opacity: .7; z-index: 5; pointer-events: none; }
+  .bar { position: absolute; height: 24px; top: 7px; border-radius: 5px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; transition: filter .12s; }
+  .bar:hover { filter: brightness(.9); }
+
+  .s-andamento { background: #AFA9EC; color: #26215C; }
+  .s-planejado  { background: #85B7EB; color: #042C53; }
+  .s-concluido  { background: #5DCAA5; color: #04342C; }
+  .s-atrasado   { background: #F09595; color: #501313; }
+
+  .add-seg-row { display: flex; align-items: center; min-height: 30px; border-top: 1px dashed var(--border-md); }
+  .add-seg-btn { margin: 4px 0 4px 22px; height: 22px; padding: 0 10px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px dashed var(--border-md); background: transparent; color: var(--hint); font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 4px; }
+  .add-seg-btn:hover { color: var(--purple); border-color: var(--purple); background: rgba(83,74,183,.05); }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 0 0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* LOADING / ERROR */
+  .state-msg { padding: 48px; text-align: center; font-size: 14px; color: var(--hint); }
+  .error-msg { padding: 20px; text-align: center; font-size: 13px; color: var(--red); background: var(--red-lt); border-radius: var(--radius-sm); margin-bottom: 14px; }
+
+  /* MODAL */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,15,.45); z-index: 200; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border-md); box-shadow: 0 8px 40px rgba(0,0,0,.18); padding: 28px; width: 400px; max-width: 94vw; }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 18px; }
+  .field { margin-bottom: 13px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px; }
+  .field input[type=text], .field select, .field input[type=date] { width: 100%; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #F7F6F3; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 999; }
+  .toast.show { opacity: 1; }
+  .toast.error { background: var(--red); }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="2" rx="1" fill="white" opacity=".9"/><rect x="1" y="7.5" width="8" height="2" rx="1" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2" rx="1" fill="white" opacity=".5"/></svg>
+    </div>
+    Calendário de Projetos
+  </div>
+  <div id="sync-status" style="font-size:12px;color:var(--hint)"></div>
+</header>
+
+<main class="main">
+  <div class="summary-grid" id="summary"></div>
+  <div id="error-banner"></div>
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="🔍 Buscar projeto..." oninput="render()">
+    <select id="fstatus" onchange="render()">
+      <option value="">Todos os status</option>
+      <option value="em andamento">Em andamento</option>
+      <option value="planejado">Planejado</option>
+      <option value="concluído">Concluído</option>
+      <option value="atrasado">Atrasado</option>
+    </select>
+    <button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button>
+  </div>
+  <div class="panel" id="panel"><div class="state-msg">Carregando...</div></div>
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:#5DCAA5"></span>Concluído</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#AFA9EC"></span>Em andamento</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#85B7EB"></span>Planejado</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#F09595"></span>Atrasado</span>
+    <span class="legend-item"><span style="width:3px;height:12px;background:#E24B4A;opacity:.7;border-radius:2px;display:inline-block"></span>Hoje</span>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal-box"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api';
+const today = new Date();
+const Y = today.getFullYear();
+const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const SC = {'em andamento':'s-andamento','planejado':'s-planejado','concluído':'s-concluido','atrasado':'s-atrasado'};
+const tStart = new Date(Y,0,1), tEnd = new Date(Y,12,0);
+const tDays = (tEnd-tStart)/86400000;
+const curM = today.getFullYear()===Y ? today.getMonth() : -1;
+const todayPct = ((today-tStart)/86400000)/tDays*100;
+
+let projects = [];
+
+// ── API helpers ──
+async function apiFetch(path, opts={}) {
+  const res = await fetch(API+path, { headers:{'Content-Type':'application/json'}, ...opts });
+  if (!res.ok) { const e = await res.json().catch(()=>({error:'Erro desconhecido'})); throw new Error(e.error||res.statusText); }
+  return res.json();
+}
+
+// ── Load ──
+async function load() {
+  setSyncStatus('Sincronizando...');
+  try {
+    projects = await apiFetch('/projects');
+    render();
+    setSyncStatus('');
+  } catch(e) {
+    showError('Não foi possível conectar à API: '+e.message);
+    setSyncStatus('⚠ Offline');
+    document.getElementById('panel').innerHTML = '<div class="state-msg">Erro ao carregar projetos.</div>';
+  }
+}
+
+// ── Render ──
+function pct(d){ const dt=new Date(d+'T00:00:00'); return Math.max(0,Math.min(100,(dt-tStart)/86400000/tDays*100)); }
+
+function render() {
+  const q  = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('fstatus').value;
+  const filtered = projects.filter(p => {
+    if(q && !p.name.toLowerCase().includes(q)) return false;
+    if(fs && !p.segments.some(s=>s.status===fs)) return false;
+    return true;
+  });
+
+  renderSummary(filtered);
+
+  const gl = Array.from({length:12},(_,i)=>`<div class="grid-line${i===curM?' cur-col':''}"></div>`).join('');
+  const tl = (todayPct>=0&&todayPct<=100)?`<div class="today-line" style="left:${todayPct.toFixed(2)}%"></div>`:'';
+
+  let html = `<div class="months-header">
+    <div class="label-col">Projeto</div>
+    <div class="months-row">${MONTHS.map((m,i)=>`<div class="month-cell${i===curM?' cur':''}">${m}</div>`).join('')}</div>
+  </div>`;
+
+  if(!filtered.length){
+    html += '<div class="state-msg">Nenhum projeto encontrado.</div>';
+    document.getElementById('panel').innerHTML = html; return;
+  }
+
+  filtered.forEach(p => {
+    const segs = fs ? p.segments.filter(s=>s.status===fs) : p.segments;
+    html += `<div class="row-wrap">
+      <div class="project-header">
+        <div class="project-name-cell">
+          <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
+          <button class="icon-btn" onclick="openProjectModal(${p.id})">✎</button>
+          <button class="icon-btn" onclick="deleteProject(${p.id})" style="color:var(--hint)">✕</button>
+        </div>
+        <div class="project-header-grid"><div class="grid-lines">${gl}</div>${tl}</div>
+      </div>`;
+
+    segs.forEach(s => {
+      const sl=pct(s.start_date), el=pct(s.end_date), w=Math.max(el-sl,.8);
+      html += `<div class="segment-row">
+        <div class="segment-label-cell">
+          <span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span>
+          <button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button>
+        </div>
+        <div class="segment-grid">
+          <div class="grid-lines">${gl}</div>${tl}
+          <div class="bar ${SC[s.status]||'s-planejado'}" style="left:${sl.toFixed(2)}%;width:${w.toFixed(2)}%"
+            onclick="openSegModal(${p.id},${s.id})"
+            title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
+        </div>
+      </div>`;
+    });
+
+    html += `<div class="add-seg-row">
+      <button class="add-seg-btn" onclick="openSegModal(${p.id},null)">+ adicionar bloco</button>
+    </div></div>`;
+  });
+
+  document.getElementById('panel').innerHTML = html;
+}
+
+function renderSummary(list) {
+  const all = list.flatMap(p=>p.segments);
+  document.getElementById('summary').innerHTML = `
+    <div class="stat-card"><div class="label">Projetos</div><div class="value">${list.length}</div></div>
+    <div class="stat-card"><div class="label">Em andamento</div><div class="value" style="color:var(--purple)">${all.filter(s=>s.status==='em andamento').length}</div></div>
+    <div class="stat-card"><div class="label">Concluídos</div><div class="value" style="color:var(--teal)">${all.filter(s=>s.status==='concluído').length}</div></div>
+    <div class="stat-card"><div class="label">Atrasados</div><div class="value" style="color:var(--red)">${all.filter(s=>s.status==='atrasado').length}</div></div>
+    <div class="stat-card"><div class="label">Planejados</div><div class="value" style="color:var(--blue)">${all.filter(s=>s.status==='planejado').length}</div></div>`;
+}
+
+// ── PROJECT MODAL ──
+function openProjectModal(pid) {
+  const p = pid ? projects.find(x=>x.id===pid) : null;
+  modal(`${p?'Renomear':'Novo'} projeto`,`
+    <div class="field"><label>Nome do projeto</label>
+      <input type="text" id="m-name" value="${p?esc(p.name):''}" placeholder="Ex: Lançamento do produto">
+    </div>`,
+    `<div></div>
+     <div style="display:flex;gap:8px">
+       <button class="btn" onclick="closeModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="saveProject(${pid||'null'})">Salvar</button>
+     </div>`
+  );
+  setTimeout(()=>document.getElementById('m-name').focus(),50);
+}
+
+async function saveProject(pid) {
+  const name = document.getElementById('m-name').value.trim();
+  if(!name) return;
+  setSyncStatus('Salvando...');
+  try {
+    if(pid) {
+      const updated = await apiFetch(`/projects/${pid}`, {method:'PUT', body:JSON.stringify({name})});
+      projects = projects.map(p=>p.id===pid ? {...p, name:updated.name} : p);
+    } else {
+      const created = await apiFetch('/projects', {method:'POST', body:JSON.stringify({name})});
+      projects.push(created);
+    }
+    closeModal(); render(); toast('Projeto salvo.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
+}
+
+async function deleteProject(pid) {
+  if(!confirm('Excluir este projeto e todos os seus blocos?')) return;
+  setSyncStatus('Salvando...');
+  try {
+    await apiFetch(`/projects/${pid}`, {method:'DELETE'});
+    projects = projects.filter(p=>p.id!==pid);
+    render(); toast('Projeto excluído.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
+}
+
+// ── SEGMENT MODAL ──
+function openSegModal(pid, sid) {
+  const p = projects.find(x=>x.id===pid);
+  const s = sid ? p.segments.find(x=>x.id===sid) : null;
+  modal(`${s?'Editar':'Novo'} bloco${s?'':' — '+esc(p.name)}`,`
+    <div class="field"><label>Rótulo</label>
+      <input type="text" id="m-label" value="${s?esc(s.label):''}" placeholder="Ex: Sprint 1, Revisão, Fase 2...">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Início</label><input type="date" id="m-start" value="${s?s.start_date:''}"></div>
+      <div class="field"><label>Fim</label><input type="date" id="m-end" value="${s?s.end_date:''}"></div>
+    </div>
+    <div class="field"><label>Status</label>
+      <select id="m-status">
+        ${['planejado','em andamento','concluído','atrasado'].map(v=>`<option value="${v}"${s&&s.status===v?' selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}
+      </select>
+    </div>`,
+    `<div>${s?`<button class="btn btn-danger btn-sm" onclick="deleteSeg(${pid},${sid})">Excluir bloco</button>`:'<span></span>'}</div>
+     <div style="display:flex;gap:8px">
+       <button class="btn" onclick="closeModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="saveSeg(${pid},${sid||'null'})">Salvar</button>
+     </div>`
+  );
+  setTimeout(()=>document.getElementById('m-label').focus(),50);
+}
+
+async function saveSeg(pid, sid) {
+  const label=document.getElementById('m-label').value.trim();
+  const start_date=document.getElementById('m-start').value;
+  const end_date=document.getElementById('m-end').value;
+  const status=document.getElementById('m-status').value;
+  if(!label||!start_date||!end_date) return;
+  setSyncStatus('Salvando...');
+  try {
+    const p = projects.find(x=>x.id===pid);
+    if(sid) {
+      const updated = await apiFetch(`/segments/${sid}`, {method:'PUT', body:JSON.stringify({label,start_date,end_date,status})});
+      p.segments = p.segments.map(s=>s.id===sid?updated:s);
+    } else {
+      const created = await apiFetch(`/projects/${pid}/segments`, {method:'POST', body:JSON.stringify({label,start_date,end_date,status})});
+      p.segments.push(created);
+    }
+    closeModal(); render(); toast('Bloco salvo.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
+}
+
+async function deleteSeg(pid, sid) {
+  setSyncStatus('Salvando...');
+  try {
+    await apiFetch(`/segments/${sid}`, {method:'DELETE'});
+    const p = projects.find(x=>x.id===pid);
+    p.segments = p.segments.filter(s=>s.id!==sid);
+    closeModal(); render(); toast('Bloco excluído.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
+}
+
+// ── UTILS ──
+function modal(title, body, actions) {
+  document.getElementById('modal-box').innerHTML = `
+    <div class="modal-title">${title}</div>${body}
+    <div class="modal-actions">${actions}</div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, err=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(err?' error':''); t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function setSyncStatus(msg) { document.getElementById('sync-status').textContent=msg; }
+function showError(msg) {
+  document.getElementById('error-banner').innerHTML = msg
+    ? `<div class="error-msg">${msg}</div>` : '';
+}
+
+document.getElementById('overlay').addEventListener('click', e=>{
+  if(e.target===document.getElementById('overlay')) closeModal();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+load();
+</script>
+</body>
+</html>
