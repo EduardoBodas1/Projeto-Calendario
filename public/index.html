@@ -140,6 +140,23 @@
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #F7F6F3; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 999; }
   .toast.show { opacity: 1; }
   .toast.error { background: var(--red); }
+
+  .bar-continues-left  { border-radius: 0 5px 5px 0; }
+  .bar-continues-right { border-radius: 5px 0 0 5px; }
+  .bar-continues-both  { border-radius: 0; }
+
+  .bar::before, .bar::after {
+    content: '▶';
+    font-size: 9px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+  .bar::before { display: none; margin-right: 3px; content: '◀'; }
+  .bar::after  { display: none; margin-left: auto; padding-left: 4px; }
+  .bar-continues-left::before  { display: inline; }
+  .bar-continues-right::after  { display: inline; }
+  .bar-continues-both::before  { display: inline; }
+  .bar-continues-both::after   { display: inline; }
 </style>
 </head>
 <body>
@@ -157,6 +174,7 @@
 <main class="main">
   <div class="summary-grid" id="summary"></div>
   <div id="error-banner"></div>
+  <!-- DEPOIS -->
   <div class="toolbar">
     <input type="text" id="search" placeholder="🔍 Buscar projeto..." oninput="render()">
     <select id="fstatus" onchange="render()">
@@ -166,6 +184,11 @@
       <option value="concluído">Concluído</option>
       <option value="atrasado">Atrasado</option>
     </select>
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">
+      <select id="year-start" onchange="onYearChange('start')" style="width:90px"></select>
+      <span>→</span>
+      <select id="year-end" onchange="onYearChange('end')" style="width:90px"></select>
+    </div>
     <button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button>
   </div>
   <div class="panel" id="panel"><div class="state-msg">Carregando...</div></div>
@@ -189,10 +212,53 @@ const today = new Date();
 const Y = today.getFullYear();
 const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const SC = {'em andamento':'s-andamento','planejado':'s-planejado','concluído':'s-concluido','atrasado':'s-atrasado'};
-const tStart = new Date(Y,0,1), tEnd = new Date(Y,12,0);
-const tDays = (tEnd-tStart)/86400000;
-const curM = today.getFullYear()===Y ? today.getMonth() : -1;
-const todayPct = ((today-tStart)/86400000)/tDays*100;
+// DEPOIS
+const MIN_YEAR = today.getFullYear() - 3;
+const MAX_YEAR = today.getFullYear() + 5;
+
+let viewStart = today.getFullYear();
+let viewEnd   = today.getFullYear();
+
+function initYearSelectors() {
+  const selS = document.getElementById('year-start');
+  const selE = document.getElementById('year-end');
+  [selS, selE].forEach(sel => {
+    sel.innerHTML = '';
+    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      sel.appendChild(o);
+    }
+  });
+  selS.value = viewStart;
+  selE.value = viewEnd;
+}
+
+function onYearChange(which) {
+  const s = parseInt(document.getElementById('year-start').value);
+  const e = parseInt(document.getElementById('year-end').value);
+  if (which === 'start' && s > viewEnd) {
+    document.getElementById('year-end').value = s;
+    viewEnd = s;
+  }
+  if (which === 'end' && e < viewStart) {
+    document.getElementById('year-start').value = e;
+    viewStart = e;
+  }
+  viewStart = parseInt(document.getElementById('year-start').value);
+  viewEnd   = parseInt(document.getElementById('year-end').value);
+  render();
+}
+
+function tStart() { return new Date(viewStart, 0, 1); }
+function tEnd()   { return new Date(viewEnd, 11, 31); }
+function tDays()  { return (tEnd() - tStart()) / 86400000; }
+
+function pct(d) {
+  const [y,m,day] = d.split('-').map(Number);
+  const dt = new Date(y, m-1, day);
+  return (dt - tStart()) / 86400000 / tDays() * 100;
+}
 
 let projects = [];
 
@@ -218,7 +284,6 @@ async function load() {
 }
 
 // ── Render ──
-// DEPOIS
 function pct(d){
   const [y,m,day] = d.split('-').map(Number);
   const dt = new Date(y, m-1, day); // sem UTC, usa horário local
@@ -236,12 +301,36 @@ function render() {
 
   renderSummary(filtered);
 
-  const gl = Array.from({length:12},(_,i)=>`<div class="grid-line${i===curM?' cur-col':''}"></div>`).join('');
-  const tl = (todayPct>=0&&todayPct<=100)?`<div class="today-line" style="left:${todayPct.toFixed(2)}%"></div>`:'';
+  // Gera colunas do cabeçalho (meses × anos)
+  const numYears = viewEnd - viewStart + 1;
+  const totalCols = numYears * 12;
+  const curM = today.getMonth();
+  const curY = today.getFullYear();
+
+  let monthCells = '';
+  for (let y = viewStart; y <= viewEnd; y++) {
+    for (let m = 0; m < 12; m++) {
+      const isCur = y === curY && m === curM;
+      monthCells += `<div class="month-cell${isCur?' cur':''}" style="min-width:0">${MONTHS[m]}${numYears>1?'<br><span style="font-size:9px;opacity:.6">'+y+'</span>':''}</div>`;
+    }
+  }
+
+  const gridLines = Array.from({length: totalCols}, (_,i) => {
+    const y = viewStart + Math.floor(i/12);
+    const m = i % 12;
+    const isCur = y === curY && m === curM;
+    // linha mais grossa no início de cada ano
+    const isYearBoundary = m === 0 && i > 0;
+    return `<div class="grid-line${isCur?' cur-col':''}" style="${isYearBoundary?'border-right:1px solid var(--border-md)':''}"></div>`;
+  }).join('');
+
+  const todayRaw = (today - tStart()) / 86400000 / tDays() * 100;
+  const tl = (todayRaw>=0 && todayRaw<=100)
+    ? `<div class="today-line" style="left:${todayRaw.toFixed(2)}%"></div>` : '';
 
   let html = `<div class="months-header">
     <div class="label-col">Projeto</div>
-    <div class="months-row">${MONTHS.map((m,i)=>`<div class="month-cell${i===curM?' cur':''}">${m}</div>`).join('')}</div>
+    <div class="months-row" style="grid-template-columns:repeat(${totalCols},1fr)">${monthCells}</div>
   </div>`;
 
   if(!filtered.length){
@@ -256,21 +345,39 @@ function render() {
         <div class="project-name-cell">
           <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
           <button class="icon-btn" onclick="openProjectModal(${p.id})">✎</button>
-          <button class="icon-btn" onclick="deleteProject(${p.id})" style="color:var(--hint)">✕</button>
+          <button class="icon-btn" onclick="deleteProject(${p.id})">✕</button>
         </div>
-        <div class="project-header-grid"><div class="grid-lines">${gl}</div>${tl}</div>
+        <div class="project-header-grid" style="--total-cols:${totalCols}">
+          <div class="grid-lines" style="grid-template-columns:repeat(${totalCols},1fr)">${gridLines}</div>${tl}
+        </div>
       </div>`;
 
     segs.forEach(s => {
-      const sl=pct(s.start_date), el=pct(s.end_date), w=Math.max(el-sl,.8);
+      const rawL = pct(s.start_date);
+      const rawR = pct(s.end_date);
+      const sl = Math.max(0, rawL);
+      const er = Math.min(100, rawR);
+      const w  = Math.max(er - sl, 0.8);
+
+      // bloco fora do período visível — não renderiza
+      if (rawR < 0 || rawL > 100) return;
+
+      const clipsLeft  = rawL < 0;
+      const clipsRight = rawR > 100;
+      let radiusClass = '';
+      if (clipsLeft && clipsRight) radiusClass = 'bar-continues-both';
+      else if (clipsLeft)          radiusClass = 'bar-continues-left';
+      else if (clipsRight)         radiusClass = 'bar-continues-right';
+
       html += `<div class="segment-row">
         <div class="segment-label-cell">
           <span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span>
           <button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button>
         </div>
         <div class="segment-grid">
-          <div class="grid-lines">${gl}</div>${tl}
-          <div class="bar ${SC[s.status]||'s-planejado'}" style="left:${sl.toFixed(2)}%;width:${w.toFixed(2)}%"
+          <div class="grid-lines" style="grid-template-columns:repeat(${totalCols},1fr)">${gridLines}</div>${tl}
+          <div class="bar ${SC[s.status]||'s-planejado'} ${radiusClass}"
+            style="left:${sl.toFixed(2)}%;width:${w.toFixed(2)}%"
             onclick="openSegModal(${p.id},${s.id})"
             title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
         </div>
@@ -446,6 +553,7 @@ document.getElementById('overlay').addEventListener('click', e=>{
 });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
+initYearSelectors();
 load();
 </script>
 </body>
