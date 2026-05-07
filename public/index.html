@@ -3,151 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calendário de Projetos</title>
+<title>Gestão de Projetos</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F7F6F3; --surface: #FFFFFF; --surface2: #F0EEE9;
-    --border: rgba(0,0,0,0.09); --border-md: rgba(0,0,0,0.14);
-    --text: #1A1917; --muted: #6B6860; --hint: #A09E99;
-    --purple: #534AB7; --purple-lt: #EEEDFE; --purple-dk: #26215C;
-    --teal: #1D9E75; --teal-lt: #E1F5EE; --teal-dk: #04342C;
-    --blue: #378ADD; --blue-lt: #E6F1FB; --blue-dk: #042C53;
-    --red: #E24B4A; --red-lt: #FCEBEB; --red-dk: #501313;
-    --radius: 10px; --radius-sm: 6px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+    --bg:#F7F6F3;--surface:#FFFFFF;--surface2:#F0EEE9;
+    --border:rgba(0,0,0,0.09);--border-md:rgba(0,0,0,0.14);
+    --text:#1A1917;--muted:#6B6860;--hint:#A09E99;
+    --purple:#534AB7;--purple-lt:#EEEDFE;--purple-dk:#26215C;
+    --teal:#1D9E75;--teal-lt:#E1F5EE;--teal-dk:#04342C;
+    --blue:#378ADD;--blue-lt:#E6F1FB;--blue-dk:#042C53;
+    --red:#E24B4A;--red-lt:#FCEBEB;--red-dk:#501313;
+    --amber:#BA7517;--amber-lt:#FAEEDA;
+    --radius:10px;--radius-sm:6px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.04);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-  .app-header {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 0 28px; height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
-  .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
-  .logo-icon { width: 28px; height: 28px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-  .logo-icon svg { width: 16px; height: 16px; }
+  /* ── HEADER ── */
+  .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:stretch;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;flex-shrink:0}
+  .logo-icon{width:28px;height:28px;background:var(--purple);border-radius:7px;display:flex;align-items:center;justify-content:center}
+  .logo-icon svg{width:16px;height:16px}
+  .tabs{display:flex;align-items:stretch;gap:0}
+  .tab{display:flex;align-items:center;gap:7px;padding:0 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;position:relative;top:1px;white-space:nowrap}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--purple);border-bottom-color:var(--purple)}
+  .sync-status{display:flex;align-items:center;font-size:12px;color:var(--hint);flex-shrink:0}
 
-  .main { padding: 24px 28px; max-width: 1300px; margin: 0 auto; }
+  /* ── MAIN ── */
+  .main{padding:24px 28px;max-width:1300px;margin:0 auto}
 
-  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
-  .stat-card .label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
-  .stat-card .value { font-size: 26px; font-weight: 600; line-height: 1; }
+  /* ── SUMMARY ── */
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+  .stat-card .slabel{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .stat-card .svalue{font-size:26px;font-weight:600;line-height:1}
 
-  .toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
-  .toolbar input[type=text] { flex: 1; min-width: 180px; }
-  input[type=text], select {
-    height: 36px; border: 1px solid var(--border-md); border-radius: var(--radius-sm);
-    background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 0 12px; outline: none;
-  }
-  input[type=text]:focus, select:focus { border-color: var(--purple); }
-  input[type=date] {
-    height: 38px; border: 1px solid var(--border-md); border-radius: var(--radius-sm);
-    background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 0 10px; outline: none; width: 100%;
-  }
-  .btn {
-    height: 36px; padding: 0 16px; font-family: 'DM Sans', sans-serif; font-size: 13px;
-    font-weight: 500; cursor: pointer; border-radius: var(--radius-sm);
-    border: 1px solid var(--border-md); background: var(--surface); color: var(--text);
-    display: inline-flex; align-items: center; gap: 6px; transition: background .12s;
-  }
-  .btn:hover { background: var(--surface2); }
-  .btn-primary { background: var(--purple); color: var(--purple-lt); border-color: var(--purple); }
-  .btn-primary:hover { background: #3C3489; }
-  .btn-danger { background: var(--red-lt); color: var(--red-dk); border-color: rgba(226,75,74,.3); }
-  .btn-danger:hover { background: #F7C1C1; }
-  .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
-  .year-range { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
-  .year-range select { width: 84px; }
+  /* ── TOOLBAR ── */
+  .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+  .toolbar input[type=text]{flex:1;min-width:180px}
+  input[type=text],input[type=date],input[type=number],select,textarea{height:36px;border:1px solid var(--border-md);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:0 12px;outline:none;transition:border-color .15s}
+  input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--purple)}
+  textarea{height:auto;padding:8px 12px;resize:vertical;line-height:1.6}
+  .btn{height:36px;padding:0 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:var(--radius-sm);border:1px solid var(--border-md);background:var(--surface);color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:background .12s;white-space:nowrap}
+  .btn:hover{background:var(--surface2)}
+  .btn-primary{background:var(--purple);color:var(--purple-lt);border-color:var(--purple)}
+  .btn-primary:hover{background:#3C3489}
+  .btn-danger{background:var(--red-lt);color:var(--red-dk);border-color:rgba(226,75,74,.3)}
+  .btn-danger:hover{background:#F7C1C1}
+  .btn-sm{height:28px;padding:0 12px;font-size:12px}
+  .year-range{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+  .year-range select{width:84px;height:36px}
 
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .months-header { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); }
-  .label-col { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 8px 14px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .months-row { flex: 1; display: grid; }
-  .month-cell { font-size: 11px; font-weight: 500; color: var(--muted); text-align: center; padding: 6px 0; border-right: 1px solid var(--border); line-height: 1.3; }
-  .month-cell:last-child { border-right: none; }
-  .month-cell.cur { color: var(--purple); font-weight: 600; }
-  .month-cell.year-boundary { border-left: 2px solid var(--border-md); }
+  /* ── CALENDAR PANEL ── */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .months-header{display:flex;background:var(--surface2);border-bottom:1px solid var(--border)}
+  .label-col{min-width:165px;width:165px;flex-shrink:0;border-right:1px solid var(--border);padding:8px 14px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .months-row{flex:1;display:grid}
+  .month-cell{font-size:11px;font-weight:500;color:var(--muted);text-align:center;padding:6px 0;border-right:1px solid var(--border);line-height:1.3}
+  .month-cell:last-child{border-right:none}
+  .month-cell.cur{color:var(--purple);font-weight:600}
+  .month-cell.year-boundary{border-left:2px solid var(--border-md)}
+  .row-wrap{border-top:1px solid var(--border)}
+  .row-wrap:first-child{border-top:none}
+  .project-header{display:flex;align-items:center;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+  .project-header:hover{background:#E8E6E0}
+  .project-name-cell{min-width:165px;width:165px;flex-shrink:0;border-right:1px solid var(--border);padding:6px 10px;display:flex;align-items:center;gap:5px}
+  .collapse-arrow{font-size:10px;color:var(--hint);flex-shrink:0;transition:transform .2s;display:inline-block}
+  .project-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .icon-btn{background:none;border:none;cursor:pointer;color:var(--hint);font-size:13px;padding:2px 3px;border-radius:4px;opacity:0;transition:opacity .1s,color .1s;flex-shrink:0;line-height:1}
+  .project-header:hover .icon-btn{opacity:1}
+  .icon-btn:hover{color:var(--purple)}
+  .project-header-grid{flex:1;position:relative;height:34px}
+  .segment-row{display:flex;align-items:center;min-height:38px;border-top:1px solid var(--border)}
+  .segment-label-cell{min-width:165px;width:165px;flex-shrink:0;border-right:1px solid var(--border);padding:4px 10px 4px 22px;display:flex;align-items:center;gap:4px}
+  .segment-label{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .seg-edit-btn{background:none;border:none;cursor:pointer;color:var(--hint);font-size:12px;padding:2px;border-radius:3px;opacity:0;transition:opacity .1s,color .1s;flex-shrink:0}
+  .segment-row:hover .seg-edit-btn{opacity:1}
+  .seg-edit-btn:hover{color:var(--purple)}
+  .segment-grid{flex:1;position:relative;height:38px}
+  .grid-lines{position:absolute;inset:0;display:grid;pointer-events:none}
+  .grid-line{border-right:1px solid var(--border)}
+  .grid-line:last-child{border-right:none}
+  .grid-line.cur-col{background:rgba(83,74,183,.035)}
+  .grid-line.year-start{border-left:2px solid var(--border-md)}
+  .today-line{position:absolute;top:0;bottom:0;width:1.5px;background:var(--red);opacity:.7;z-index:5;pointer-events:none}
+  .bar{position:absolute;height:24px;top:7px;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:3;transition:filter .12s}
+  .bar:hover{filter:brightness(.9)}
+  .bar-continues-left{border-radius:0 5px 5px 0}
+  .bar-continues-right{border-radius:5px 0 0 5px}
+  .bar-continues-both{border-radius:0}
+  .bar::before{content:'◀';font-size:9px;opacity:.8;margin-right:3px;display:none;flex-shrink:0}
+  .bar::after{content:'▶';font-size:9px;opacity:.8;margin-left:auto;padding-left:4px;display:none;flex-shrink:0}
+  .bar-continues-left::before{display:inline}
+  .bar-continues-right::after{display:inline}
+  .bar-continues-both::before,.bar-continues-both::after{display:inline}
+  .s-andamento{background:#AFA9EC;color:#26215C}
+  .s-planejado{background:#85B7EB;color:#042C53}
+  .s-concluido{background:#5DCAA5;color:#04342C}
+  .s-atrasado{background:#F09595;color:#501313}
+  .add-seg-row{display:flex;align-items:center;min-height:30px;border-top:1px dashed var(--border-md)}
+  .add-seg-btn{margin:4px 0 4px 22px;height:22px;padding:0 10px;font-size:11px;cursor:pointer;border-radius:5px;border:1px dashed var(--border-md);background:transparent;color:var(--hint);font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:4px}
+  .add-seg-btn:hover{color:var(--purple);border-color:var(--purple);background:rgba(83,74,183,.05)}
 
-  .row-wrap { border-top: 1px solid var(--border); }
-  .row-wrap:first-child { border-top: none; }
-  .project-header { display: flex; align-items: center; background: var(--surface2); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
-  .project-header:hover { background: #E8E6E0; }
-  .project-name-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 6px 10px; display: flex; align-items: center; gap: 5px; }
-  .collapse-arrow { font-size: 10px; color: var(--hint); flex-shrink: 0; transition: transform .2s; display: inline-block; }
-  .project-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-  .icon-btn { background: none; border: none; cursor: pointer; color: var(--hint); font-size: 13px; padding: 2px 3px; border-radius: 4px; opacity: 0; transition: opacity .1s, color .1s; flex-shrink: 0; line-height: 1; }
-  .project-header:hover .icon-btn { opacity: 1; }
-  .icon-btn:hover { color: var(--purple); }
-  .project-header-grid { flex: 1; position: relative; height: 34px; }
+  /* ── SCOPE TAB ── */
+  .scope-layout{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+  .project-list-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .list-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .list-search{padding:8px 10px;border-bottom:1px solid var(--border)}
+  .list-search input{width:100%;height:28px;border:0.5px solid var(--border-md);border-radius:6px;background:var(--surface2);font-size:12px;padding:0 10px;color:var(--text);outline:none}
+  .proj-list-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;transition:background .1s}
+  .proj-list-item:last-child{border-bottom:none}
+  .proj-list-item:hover{background:var(--surface2)}
+  .proj-list-item.active{background:var(--purple-lt)}
+  .proj-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .proj-list-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:var(--text)}
+  .proj-list-item.active .proj-list-name{color:var(--purple)}
+  .proj-list-count{font-size:11px;color:var(--hint)}
 
-  .segment-row { display: flex; align-items: center; min-height: 38px; border-top: 1px solid var(--border); }
-  .segment-label-cell { min-width: 165px; width: 165px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 4px 10px 4px 22px; display: flex; align-items: center; gap: 4px; }
-  .segment-label { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-  .seg-edit-btn { background: none; border: none; cursor: pointer; color: var(--hint); font-size: 12px; padding: 2px; border-radius: 3px; opacity: 0; transition: opacity .1s, color .1s; flex-shrink: 0; }
-  .segment-row:hover .seg-edit-btn { opacity: 1; }
-  .seg-edit-btn:hover { color: var(--purple); }
-  .segment-grid { flex: 1; position: relative; height: 38px; }
+  .scope-detail{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .scope-detail-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .scope-detail-title{font-size:16px;font-weight:500}
+  .scope-detail-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .scope-detail-body{padding:20px 22px}
+  .edit-banner{background:var(--purple-lt);border-bottom:1px solid rgba(83,74,183,.2);padding:8px 20px;font-size:12px;color:var(--purple);display:flex;align-items:center;gap:6px}
 
-  .grid-lines { position: absolute; inset: 0; display: grid; pointer-events: none; }
-  .grid-line { border-right: 1px solid var(--border); }
-  .grid-line:last-child { border-right: none; }
-  .grid-line.cur-col { background: rgba(83,74,183,.035); }
-  .grid-line.year-start { border-left: 2px solid var(--border-md); }
-  .today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--red); opacity: .7; z-index: 5; pointer-events: none; }
+  .sec{margin-bottom:18px}
+  .sec-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+  .ig3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+  .ig2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .icard{background:var(--surface2);border-radius:var(--radius-sm);padding:9px 12px}
+  .ilabel{font-size:11px;color:var(--muted);margin-bottom:3px}
+  .ivalue{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px}
+  .desc-box{background:var(--surface2);border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;color:var(--muted);line-height:1.6}
+  .divider{height:1px;background:var(--border);margin:16px 0}
 
-  .bar {
-    position: absolute; height: 24px; top: 7px; border-radius: 5px;
-    display: flex; align-items: center; padding: 0 8px;
-    font-size: 11px; font-weight: 500; cursor: pointer;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    z-index: 3; transition: filter .12s;
-  }
-  .bar:hover { filter: brightness(.9); }
-  .bar-continues-left  { border-radius: 0 5px 5px 0; }
-  .bar-continues-right { border-radius: 5px 0 0 5px; }
-  .bar-continues-both  { border-radius: 0; }
-  .bar::before { content: '◀'; font-size: 9px; opacity: .8; margin-right: 3px; display: none; flex-shrink: 0; }
-  .bar::after  { content: '▶'; font-size: 9px; opacity: .8; margin-left: auto; padding-left: 4px; display: none; flex-shrink: 0; }
-  .bar-continues-left::before  { display: inline; }
-  .bar-continues-right::after  { display: inline; }
-  .bar-continues-both::before  { display: inline; }
-  .bar-continues-both::after   { display: inline; }
+  .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap}
+  .b-andamento{background:var(--purple-lt);color:var(--purple)}
+  .b-planejado{background:var(--blue-lt);color:var(--blue-dk)}
+  .b-concluido{background:var(--teal-lt);color:var(--teal-dk)}
+  .b-atrasado{background:var(--red-lt);color:var(--red-dk)}
 
-  .s-andamento { background: #AFA9EC; color: #26215C; }
-  .s-planejado  { background: #85B7EB; color: #042C53; }
-  .s-concluido  { background: #5DCAA5; color: #04342C; }
-  .s-atrasado   { background: #F09595; color: #501313; }
+  .prio-alta{color:var(--red)}
+  .prio-media{color:var(--amber)}
+  .prio-baixa{color:var(--teal)}
+  .prio-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
-  .add-seg-row { display: flex; align-items: center; min-height: 30px; border-top: 1px dashed var(--border-md); }
-  .add-seg-btn { margin: 4px 0 4px 22px; height: 22px; padding: 0 10px; font-size: 11px; cursor: pointer; border-radius: 5px; border: 1px dashed var(--border-md); background: transparent; color: var(--hint); font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 4px; }
-  .add-seg-btn:hover { color: var(--purple); border-color: var(--purple); background: rgba(83,74,183,.05); }
+  .orc-box{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px}
+  .orc-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px}
+  .orc-value{font-size:17px;font-weight:500}
+  .prog-bg{height:6px;background:var(--border-md);border-radius:3px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:3px}
+  .prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
 
-  .legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 0 0; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .risk-list{display:flex;flex-direction:column;gap:7px}
+  .risk-item{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+  .risk-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-top:1px}
+  .rb-alto{background:var(--red-lt);color:#A32D2D}
+  .rb-medio{background:var(--amber-lt);color:#854F0B}
+  .rb-baixo{background:var(--teal-lt);color:#0F6E56}
+  .risk-text{font-size:13px;color:var(--text);line-height:1.4;flex:1}
 
-  .state-msg { padding: 48px; text-align: center; font-size: 14px; color: var(--hint); }
-  .error-msg { padding: 20px; text-align: center; font-size: 13px; color: var(--red); background: var(--red-lt); border-radius: var(--radius-sm); margin-bottom: 14px; }
+  .obj-list{display:flex;flex-direction:column;gap:7px}
+  .obj-item{display:flex;align-items:center;gap:9px;font-size:13px}
+  .obj-item.done{color:var(--text)}
+  .obj-item.pending{color:var(--muted)}
+  .obj-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .obj-item.done .obj-check{background:var(--teal);border-color:var(--teal);color:#fff;font-size:10px}
 
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,15,.45); z-index: 200; align-items: center; justify-content: center; }
-  .overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border-md); box-shadow: 0 8px 40px rgba(0,0,0,.18); padding: 28px; width: 400px; max-width: 94vw; }
-  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 18px; }
-  .field { margin-bottom: 13px; }
-  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px; }
-  .field input[type=text], .field select, .field input[type=date] { width: 100%; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .team-list{display:flex;flex-direction:column;gap:7px}
+  .team-member{display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm)}
+  .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;background:var(--purple-lt);color:var(--purple)}
+  .member-info{flex:1}
+  .member-name{font-size:13px;font-weight:500}
+  .member-role{font-size:11px;color:var(--muted)}
+  .member-remove{background:none;border:none;cursor:pointer;color:var(--hint);font-size:13px;padding:3px;border-radius:4px;display:flex;align-items:center;line-height:1}
+  .member-remove:hover{color:var(--red);background:var(--red-lt)}
 
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #F7F6F3; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 999; }
-  .toast.show { opacity: 1; }
-  .toast.error { background: var(--red); }
+  .add-team-btn{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px dashed var(--border-md);border-radius:var(--radius-sm);background:transparent;cursor:pointer;font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;width:100%;transition:all .15s;margin-top:8px}
+  .add-team-btn:hover{color:var(--purple);border-color:var(--purple);background:var(--purple-lt)}
+
+  .team-search-box{background:var(--surface);border:1px solid var(--border-md);border-radius:var(--radius-sm);overflow:hidden;margin-top:8px}
+  .team-search-input{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border)}
+  .team-search-input input{border:none;background:transparent;font-size:13px;color:var(--text);outline:none;flex:1;font-family:'DM Sans',sans-serif;height:auto;padding:0}
+  .team-search-result{display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;transition:background .1s;font-size:13px}
+  .team-search-result:hover{background:var(--surface2)}
+  .team-add-manual{padding:10px 12px;border-top:1px solid var(--border)}
+  .team-add-manual-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center}
+  .team-add-manual input{height:30px;font-size:12px;padding:0 8px}
+  .team-add-manual button{height:30px;padding:0 12px;font-size:12px}
+
+  /* EDIT FORM */
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+  .field input,.field select{width:100%;height:34px;padding:0 10px}
+  .field textarea{width:100%;height:72px;padding:8px 10px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .obj-edit-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .obj-edit-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--purple);flex-shrink:0}
+  .obj-edit-row input[type=text]{flex:1;height:30px;font-size:12px;padding:0 8px}
+  .obj-edit-row button{background:none;border:none;cursor:pointer;color:var(--hint);font-size:14px;padding:3px;line-height:1}
+  .obj-edit-row button:hover{color:var(--red)}
+  .risk-edit-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .risk-edit-row select{width:90px;height:30px;font-size:12px;padding:0 6px;flex-shrink:0}
+  .risk-edit-row input{flex:1;height:30px;font-size:12px;padding:0 8px}
+  .risk-edit-row button{background:none;border:none;cursor:pointer;color:var(--hint);font-size:14px;padding:3px;line-height:1}
+  .risk-edit-row button:hover{color:var(--red)}
+  .add-row-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px dashed var(--border-md);border-radius:var(--radius-sm);background:transparent;cursor:pointer;font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+  .add-row-btn:hover{color:var(--purple);border-color:var(--purple)}
+
+  /* MODAL */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(20,18,15,.45);z-index:200;align-items:center;justify-content:center}
+  .overlay.open{display:flex}
+  .modal{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border-md);box-shadow:0 8px 40px rgba(0,0,0,.18);padding:28px;width:400px;max-width:94vw}
+  .modal-title{font-size:16px;font-weight:600;margin-bottom:18px}
+  .modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+
+  /* LEGEND */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;padding:12px 0 0}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .legend-dot{width:10px;height:10px;border-radius:3px}
+
+  .state-msg{padding:48px;text-align:center;font-size:14px;color:var(--hint)}
+  .error-msg{padding:16px 20px;font-size:13px;color:var(--red);background:var(--red-lt);border-radius:var(--radius-sm);margin-bottom:14px}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#F7F6F3;font-size:13px;padding:10px 18px;border-radius:var(--radius-sm);opacity:0;pointer-events:none;transition:opacity .2s;z-index:999}
+  .toast.show{opacity:1}
+  .toast.err{background:var(--red)}
 </style>
 </head>
 <body>
@@ -157,44 +242,64 @@
     <div class="logo-icon">
       <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="2" rx="1" fill="white" opacity=".9"/><rect x="1" y="7.5" width="8" height="2" rx="1" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2" rx="1" fill="white" opacity=".5"/></svg>
     </div>
-    Calendário de Projetos
+    Gestão de Projetos
   </div>
-  <div id="sync-status" style="font-size:12px;color:var(--hint)"></div>
+  <div class="tabs">
+    <div class="tab active" id="tab-cal" onclick="switchTab('cal')">📅 Calendário</div>
+    <div class="tab" id="tab-scope" onclick="switchTab('scope')">📋 Escopo de projetos</div>
+  </div>
+  <div class="sync-status" id="sync-status"></div>
 </header>
 
-<main class="main">
-  <div class="summary-grid" id="summary"></div>
-  <div id="error-banner"></div>
-  <div class="toolbar">
-    <input type="text" id="search" placeholder="🔍 Buscar projeto..." oninput="render()">
-    <select id="fstatus" onchange="render()">
-      <option value="">Todos os status</option>
-      <option value="em andamento">Em andamento</option>
-      <option value="planejado">Planejado</option>
-      <option value="concluído">Concluído</option>
-      <option value="atrasado">Atrasado</option>
-    </select>
-    <div class="year-range">
-      <select id="year-start" onchange="onYearChange('start')"></select>
-      <span>→</span>
-      <select id="year-end" onchange="onYearChange('end')"></select>
+<!-- CALENDAR TAB -->
+<div id="view-cal">
+  <div class="main">
+    <div class="summary-grid" id="cal-summary"></div>
+    <div id="error-banner"></div>
+    <div class="toolbar">
+      <input type="text" id="cal-search" placeholder="🔍 Buscar projeto..." oninput="calRender()">
+      <select id="cal-fstatus" onchange="calRender()">
+        <option value="">Todos os status</option>
+        <option value="em andamento">Em andamento</option>
+        <option value="planejado">Planejado</option>
+        <option value="concluído">Concluído</option>
+        <option value="atrasado">Atrasado</option>
+      </select>
+      <div class="year-range">
+        <select id="year-start" onchange="onYearChange('start')"></select>
+        <span>→</span>
+        <select id="year-end" onchange="onYearChange('end')"></select>
+      </div>
+      <button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button>
     </div>
-    <button class="btn btn-primary" onclick="openProjectModal()">+ Novo projeto</button>
+    <div class="panel" id="cal-panel"><div class="state-msg">Carregando...</div></div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#5DCAA5"></span>Concluído</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#AFA9EC"></span>Em andamento</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#85B7EB"></span>Planejado</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#F09595"></span>Atrasado</span>
+      <span class="legend-item"><span style="width:3px;height:12px;background:var(--red);opacity:.7;border-radius:2px;display:inline-block"></span>Hoje</span>
+      <span class="legend-item"><span style="font-size:10px">◀▶</span> Continua fora do período</span>
+    </div>
   </div>
-  <div class="panel" id="panel"><div class="state-msg">Carregando...</div></div>
-  <div class="legend">
-    <span class="legend-item"><span class="legend-dot" style="background:#5DCAA5"></span>Concluído</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#AFA9EC"></span>Em andamento</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#85B7EB"></span>Planejado</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#F09595"></span>Atrasado</span>
-    <span class="legend-item"><span style="width:3px;height:12px;background:#E24B4A;opacity:.7;border-radius:2px;display:inline-block"></span>Hoje</span>
-    <span class="legend-item"><span style="font-size:10px">◀▶</span>Continua fora do período</span>
-  </div>
-</main>
-
-<div class="overlay" id="overlay">
-  <div class="modal" id="modal-box"></div>
 </div>
+
+<!-- SCOPE TAB -->
+<div id="view-scope" style="display:none">
+  <div class="main">
+    <div class="scope-layout">
+      <div class="project-list-panel">
+        <div class="list-header" id="scope-list-header">Projetos</div>
+        <div class="list-search"><input type="text" id="scope-search" placeholder="Filtrar..." oninput="scopeFilterList()"></div>
+        <div id="scope-proj-list"><div class="state-msg" style="padding:24px">Carregando...</div></div>
+      </div>
+      <div id="scope-detail"><div class="state-msg">Selecione um projeto</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay"><div class="modal" id="modal-box"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -203,349 +308,635 @@ const today = new Date();
 const Y = today.getFullYear();
 const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const SC = {'em andamento':'s-andamento','planejado':'s-planejado','concluído':'s-concluido','atrasado':'s-atrasado'};
-const MIN_YEAR = Y - 3;
-const MAX_YEAR = Y + 5;
+const BADGE = {'em andamento':'b-andamento','planejado':'b-planejado','concluído':'b-concluido','atrasado':'b-atrasado'};
+const STATUS_LABEL = {'em andamento':'Em andamento','planejado':'Planejado','concluído':'Concluído','atrasado':'Atrasado'};
+const PRIO = {alta:{label:'Alta',cls:'prio-alta',dot:'#E24B4A'},media:{label:'Média',cls:'prio-media',dot:'#BA7517'},baixa:{label:'Baixa',cls:'prio-baixa',dot:'#1D9E75'}};
+const RISK_LABEL = {alto:'Alto',medio:'Médio',baixo:'Baixo'};
+const MIN_YEAR = Y-3, MAX_YEAR = Y+5;
 
-let viewStart = Y;
-let viewEnd   = Y;
-let projects  = [];
+let projects = [];
+let scopes = [];
 let collapsed = new Set();
-let initialCollapseSet = false;
+let initialCollapse = false;
+let viewStart = Y, viewEnd = Y;
+let currentTab = 'cal';
+let currentScopeProject = null;
+let scopeEditing = false;
+let scopeEditState = {};
+let scopeSearchOpen = false;
 
-// ── Year selectors ──
-function initYearSelectors() {
-  ['year-start','year-end'].forEach(id => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = '';
-    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
-      const o = document.createElement('option');
-      o.value = y; o.textContent = y;
-      sel.appendChild(o);
-    }
-  });
-  document.getElementById('year-start').value = viewStart;
-  document.getElementById('year-end').value   = viewEnd;
-}
-
-function onYearChange(which) {
-  let s = parseInt(document.getElementById('year-start').value);
-  let e = parseInt(document.getElementById('year-end').value);
-  if (which === 'start' && s > e) { e = s; document.getElementById('year-end').value = e; }
-  if (which === 'end'   && e < s) { s = e; document.getElementById('year-start').value = s; }
-  viewStart = s; viewEnd = e;
-  render();
-}
-
-// ── Time helpers ──
-function tStart() { return new Date(viewStart, 0, 1); }
-function tEnd()   { return new Date(viewEnd, 11, 31); }
-function tDays()  { return (tEnd() - tStart()) / 86400000; }
-
-function pct(d) {
-  const [y, m, day] = d.split('-').map(Number);
-  const dt = new Date(y, m - 1, day);
-  return (dt - tStart()) / 86400000 / tDays() * 100;
-}
-
-function fixDate(val) {
-  if (!val) return '';
-  const d = new Date(val);
-  return isNaN(d) ? val : d.toISOString().split('T')[0];
-}
-
-// ── API helpers ──
+// ── API ──
 async function apiFetch(path, opts={}) {
-  const res = await fetch(API+path, { headers:{'Content-Type':'application/json'}, ...opts });
-  if (!res.ok) { const e = await res.json().catch(()=>({error:'Erro desconhecido'})); throw new Error(e.error||res.statusText); }
+  const res = await fetch(API+path, {headers:{'Content-Type':'application/json'}, ...opts});
+  if (!res.ok) { const e = await res.json().catch(()=>({error:'Erro'})); throw new Error(e.error||res.statusText); }
   return res.json();
 }
 
-// ── Load ──
+// ── INIT ──
 async function load() {
   setSyncStatus('Sincronizando...');
   try {
     projects = await apiFetch('/projects');
-    if (!initialCollapseSet) {
-      projects.forEach(p => collapsed.add(p.id));
-      initialCollapseSet = true;
-    }
-    render();
+    if (!initialCollapse) { projects.forEach(p=>collapsed.add(p.id)); initialCollapse=true; }
+    await loadScopes();
+    calRender();
+    if (currentTab==='scope') scopeRenderList();
     setSyncStatus('');
   } catch(e) {
-    showError('Não foi possível conectar à API: ' + e.message);
+    document.getElementById('error-banner').innerHTML = `<div class="error-msg">Erro ao conectar: ${e.message}</div>`;
+    document.getElementById('cal-panel').innerHTML = '<div class="state-msg">Erro ao carregar.</div>';
     setSyncStatus('⚠ Offline');
-    document.getElementById('panel').innerHTML = '<div class="state-msg">Erro ao carregar projetos.</div>';
   }
 }
 
-// ── Toggle collapse ──
-function toggleProject(pid) {
-  if (collapsed.has(pid)) collapsed.delete(pid);
-  else collapsed.add(pid);
-  render();
+async function loadScopes() {
+  scopes = await apiFetch('/scopes');
 }
 
-// ── Render ──
-function render() {
-  const q  = document.getElementById('search').value.toLowerCase();
-  const fs = document.getElementById('fstatus').value;
-  const filtered = projects.filter(p => {
-    if (q && !p.name.toLowerCase().includes(q)) return false;
-    if (fs && !p.segments.some(s => s.status === fs)) return false;
+// ── TAB ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-cal').classList.toggle('active', tab==='cal');
+  document.getElementById('tab-scope').classList.toggle('active', tab==='scope');
+  document.getElementById('view-cal').style.display = tab==='cal' ? '' : 'none';
+  document.getElementById('view-scope').style.display = tab==='scope' ? '' : 'none';
+  if (tab==='scope') { scopeRenderList(); if(currentScopeProject) scopeRenderDetail(); }
+}
+
+// ══════════════════════════════════════════
+// CALENDAR TAB
+// ══════════════════════════════════════════
+function initYearSelectors() {
+  ['year-start','year-end'].forEach(id => {
+    const sel = document.getElementById(id); sel.innerHTML='';
+    for(let y=MIN_YEAR; y<=MAX_YEAR; y++) { const o=document.createElement('option'); o.value=y; o.textContent=y; sel.appendChild(o); }
+  });
+  document.getElementById('year-start').value = viewStart;
+  document.getElementById('year-end').value = viewEnd;
+}
+function onYearChange(which) {
+  let s=parseInt(document.getElementById('year-start').value);
+  let e=parseInt(document.getElementById('year-end').value);
+  if(which==='start'&&s>e){e=s;document.getElementById('year-end').value=e;}
+  if(which==='end'&&e<s){s=e;document.getElementById('year-start').value=s;}
+  viewStart=s; viewEnd=e; calRender();
+}
+function tStart(){return new Date(viewStart,0,1);}
+function tEnd(){return new Date(viewEnd,11,31);}
+function tDays(){return(tEnd()-tStart())/86400000;}
+function pct(d){const[y,m,day]=d.split('-').map(Number);const dt=new Date(y,m-1,day);return(dt-tStart())/86400000/tDays()*100;}
+function fixDate(v){if(!v)return'';const d=new Date(v);return isNaN(d)?v:d.toISOString().split('T')[0];}
+function fmtDate(d){if(!d)return'';const[y,m,dd]=d.split('-');const ms=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return`${parseInt(dd)} ${ms[parseInt(m)-1]} ${y}`;}
+function fmt(n){return'R$ '+Number(n||0).toLocaleString('pt-BR');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function initials(name){return(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+
+function calRender() {
+  const q=document.getElementById('cal-search').value.toLowerCase();
+  const fs=document.getElementById('cal-fstatus').value;
+  const filtered=projects.filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q))return false;
+    if(fs&&!p.segments.some(s=>s.status===fs))return false;
     return true;
   });
-
-  renderSummary(filtered);
-
-  const numYears  = viewEnd - viewStart + 1;
-  const totalCols = numYears * 12;
-  const curY = today.getFullYear();
-  const curM = today.getMonth();
-  const gridStyle = `grid-template-columns:repeat(${totalCols},1fr)`;
-
-  // Cabeçalho de meses
-  let monthCells = '';
-  for (let y = viewStart; y <= viewEnd; y++) {
-    for (let m = 0; m < 12; m++) {
-      const isCur = y === curY && m === curM;
-      const isYearBoundary = m === 0 && y > viewStart;
-      monthCells += `<div class="month-cell${isCur?' cur':''}${isYearBoundary?' year-boundary':''}">${MONTHS[m]}${numYears > 1 ? `<br><span style="font-size:9px;opacity:.55">${y}</span>` : ''}</div>`;
-    }
+  calRenderSummary(filtered);
+  const numY=viewEnd-viewStart+1, totalCols=numY*12;
+  const curY=today.getFullYear(), curM=today.getMonth();
+  const gs=`grid-template-columns:repeat(${totalCols},1fr)`;
+  let mCells='';
+  for(let y=viewStart;y<=viewEnd;y++) for(let m=0;m<12;m++) {
+    const isCur=y===curY&&m===curM, isYB=m===0&&y>viewStart;
+    mCells+=`<div class="month-cell${isCur?' cur':''}${isYB?' year-boundary':''}">${MONTHS[m]}${numY>1?`<br><span style="font-size:9px;opacity:.55">${y}</span>`:''}</div>`;
   }
-
-  // Grid lines
-  const gridLines = Array.from({length: totalCols}, (_, i) => {
-    const y = viewStart + Math.floor(i / 12);
-    const m = i % 12;
-    const isCur = y === curY && m === curM;
-    const isYearStart = m === 0 && y > viewStart;
-    return `<div class="grid-line${isCur?' cur-col':''}${isYearStart?' year-start':''}"></div>`;
+  const gl=Array.from({length:totalCols},(_,i)=>{
+    const y=viewStart+Math.floor(i/12),m=i%12;
+    const isCur=y===curY&&m===curM,isYS=m===0&&y>viewStart;
+    return`<div class="grid-line${isCur?' cur-col':''}${isYS?' year-start':''}"></div>`;
   }).join('');
-
-  // Linha de hoje
-  const todayRaw = (today - tStart()) / 86400000 / tDays() * 100;
-  const tl = (todayRaw >= 0 && todayRaw <= 100)
-    ? `<div class="today-line" style="left:${todayRaw.toFixed(2)}%"></div>` : '';
-
-  let html = `<div class="months-header">
-    <div class="label-col">Projeto</div>
-    <div class="months-row" style="${gridStyle}">${monthCells}</div>
-  </div>`;
-
-  if (!filtered.length) {
-    html += '<div class="state-msg">Nenhum projeto encontrado.</div>';
-    document.getElementById('panel').innerHTML = html;
-    return;
-  }
-
-  filtered.forEach(p => {
-    const isCollapsed = collapsed.has(p.id);
-    const segs = fs ? p.segments.filter(s => s.status === fs) : p.segments;
-
-    html += `<div class="row-wrap">
-      <div class="project-header" onclick="toggleProject(${p.id})">
-        <div class="project-name-cell">
-          <span class="collapse-arrow" style="transform:rotate(${isCollapsed ? '0':'90'}deg)">▶</span>
-          <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
-          <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})" title="Renomear">✎</button>
-          <button class="icon-btn" onclick="event.stopPropagation();deleteProject(${p.id})" title="Excluir">✕</button>
-        </div>
-        <div class="project-header-grid">
-          <div class="grid-lines" style="${gridStyle}">${gridLines}</div>${tl}
-        </div>
-      </div>`;
-
-    if (!isCollapsed) {
-      segs.forEach(s => {
-        const rawL = pct(s.start_date);
-        const rawR = pct(s.end_date);
-
-        if (rawR < 0 || rawL > 100) return;
-
-        const sl = Math.max(0, rawL);
-        const er = Math.min(100, rawR);
-        const w  = Math.max(er - sl, 0.5);
-
-        const clipsLeft  = rawL < 0;
-        const clipsRight = rawR > 100;
-        let radiusClass = '';
-        if      (clipsLeft && clipsRight) radiusClass = 'bar-continues-both';
-        else if (clipsLeft)               radiusClass = 'bar-continues-left';
-        else if (clipsRight)              radiusClass = 'bar-continues-right';
-
-        html += `<div class="segment-row">
-          <div class="segment-label-cell">
-            <span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span>
-            <button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button>
-          </div>
-          <div class="segment-grid">
-            <div class="grid-lines" style="${gridStyle}">${gridLines}</div>${tl}
-            <div class="bar ${SC[s.status]||'s-planejado'} ${radiusClass}"
-              style="left:${sl.toFixed(3)}%;width:${w.toFixed(3)}%"
-              onclick="openSegModal(${p.id},${s.id})"
-              title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
-          </div>
-        </div>`;
+  const todayRaw=(today-tStart())/86400000/tDays()*100;
+  const tl=(todayRaw>=0&&todayRaw<=100)?`<div class="today-line" style="left:${todayRaw.toFixed(2)}%"></div>`:'';
+  let html=`<div class="months-header"><div class="label-col">Projeto</div><div class="months-row" style="${gs}">${mCells}</div></div>`;
+  if(!filtered.length){html+='<div class="state-msg">Nenhum projeto encontrado.</div>';document.getElementById('cal-panel').innerHTML=html;return;}
+  filtered.forEach(p=>{
+    const isC=collapsed.has(p.id);
+    const segs=fs?p.segments.filter(s=>s.status===fs):p.segments;
+    html+=`<div class="row-wrap"><div class="project-header" onclick="toggleCollapse(${p.id})">
+      <div class="project-name-cell">
+        <span class="collapse-arrow" style="transform:rotate(${isC?'0':'90'}deg)">▶</span>
+        <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
+        <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})">✎</button>
+        <button class="icon-btn" onclick="event.stopPropagation();deleteProject(${p.id})">✕</button>
+      </div>
+      <div class="project-header-grid"><div class="grid-lines" style="${gs}">${gl}</div>${tl}</div>
+    </div>`;
+    if(!isC){
+      segs.forEach(s=>{
+        const rawL=pct(s.start_date),rawR=pct(s.end_date);
+        if(rawR<0||rawL>100)return;
+        const sl=Math.max(0,rawL),er=Math.min(100,rawR),w=Math.max(er-sl,.5);
+        const cL=rawL<0,cR=rawR>100;
+        let rc=cL&&cR?'bar-continues-both':cL?'bar-continues-left':cR?'bar-continues-right':'';
+        html+=`<div class="segment-row">
+          <div class="segment-label-cell"><span class="segment-label" title="${esc(s.label)}">↳ ${esc(s.label)}</span><button class="seg-edit-btn" onclick="openSegModal(${p.id},${s.id})">✎</button></div>
+          <div class="segment-grid"><div class="grid-lines" style="${gs}">${gl}</div>${tl}
+            <div class="bar ${SC[s.status]||'s-planejado'} ${rc}" style="left:${sl.toFixed(3)}%;width:${w.toFixed(3)}%" onclick="openSegModal(${p.id},${s.id})" title="${esc(s.label)}: ${s.start_date} → ${s.end_date}">${esc(s.label)}</div>
+          </div></div>`;
       });
-
-      html += `<div class="add-seg-row">
-        <button class="add-seg-btn" onclick="openSegModal(${p.id},null)">+ adicionar bloco</button>
-      </div>`;
+      html+=`<div class="add-seg-row"><button class="add-seg-btn" onclick="openSegModal(${p.id},null)">+ adicionar bloco</button></div>`;
     }
-
-    html += `</div>`;
+    html+=`</div>`;
   });
-
-  document.getElementById('panel').innerHTML = html;
+  document.getElementById('cal-panel').innerHTML=html;
 }
 
-function renderSummary(list) {
-  const all = list.flatMap(p => p.segments);
-  document.getElementById('summary').innerHTML = `
-    <div class="stat-card"><div class="label">Projetos</div><div class="value">${list.length}</div></div>
-    <div class="stat-card"><div class="label">Em andamento</div><div class="value" style="color:var(--purple)">${all.filter(s=>s.status==='em andamento').length}</div></div>
-    <div class="stat-card"><div class="label">Concluídos</div><div class="value" style="color:var(--teal)">${all.filter(s=>s.status==='concluído').length}</div></div>
-    <div class="stat-card"><div class="label">Atrasados</div><div class="value" style="color:var(--red)">${all.filter(s=>s.status==='atrasado').length}</div></div>
-    <div class="stat-card"><div class="label">Planejados</div><div class="value" style="color:var(--blue)">${all.filter(s=>s.status==='planejado').length}</div></div>`;
+function calRenderSummary(list) {
+  const all=list.flatMap(p=>p.segments);
+  document.getElementById('cal-summary').innerHTML=`
+    <div class="stat-card"><div class="slabel">Projetos</div><div class="svalue">${list.length}</div></div>
+    <div class="stat-card"><div class="slabel">Em andamento</div><div class="svalue" style="color:var(--purple)">${all.filter(s=>s.status==='em andamento').length}</div></div>
+    <div class="stat-card"><div class="slabel">Concluídos</div><div class="svalue" style="color:var(--teal)">${all.filter(s=>s.status==='concluído').length}</div></div>
+    <div class="stat-card"><div class="slabel">Atrasados</div><div class="svalue" style="color:var(--red)">${all.filter(s=>s.status==='atrasado').length}</div></div>
+    <div class="stat-card"><div class="slabel">Planejados</div><div class="svalue" style="color:var(--blue)">${all.filter(s=>s.status==='planejado').length}</div></div>`;
+}
+
+function toggleCollapse(pid){
+  if(collapsed.has(pid))collapsed.delete(pid); else collapsed.add(pid);
+  calRender();
 }
 
 // ── PROJECT MODAL ──
 function openProjectModal(pid) {
-  const p = pid ? projects.find(x => x.id === pid) : null;
-  modal(`${p ? 'Renomear' : 'Novo'} projeto`, `
-    <div class="field"><label>Nome do projeto</label>
-      <input type="text" id="m-name" value="${p ? esc(p.name) : ''}" placeholder="Ex: Lançamento do produto">
-    </div>`,
-    `<div></div>
-     <div style="display:flex;gap:8px">
-       <button class="btn" onclick="closeModal()">Cancelar</button>
-       <button class="btn btn-primary" onclick="saveProject(${pid||'null'})">Salvar</button>
-     </div>`
+  const p=pid?projects.find(x=>x.id===pid):null;
+  modal(`${p?'Renomear':'Novo'} projeto`,
+    `<div class="field"><label>Nome</label><input type="text" id="m-name" value="${p?esc(p.name):''}" placeholder="Ex: Lançamento do produto"></div>`,
+    `<div></div><div style="display:flex;gap:8px"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveProject(${pid||'null'})">Salvar</button></div>`
   );
-  setTimeout(() => document.getElementById('m-name').focus(), 50);
+  setTimeout(()=>document.getElementById('m-name').focus(),50);
 }
-
 async function saveProject(pid) {
-  const name = document.getElementById('m-name').value.trim();
-  if (!name) return;
+  const name=document.getElementById('m-name').value.trim();
+  if(!name)return;
   setSyncStatus('Salvando...');
   try {
-    if (pid) {
-      const updated = await apiFetch(`/projects/${pid}`, {method:'PUT', body:JSON.stringify({name})});
-      projects = projects.map(p => p.id === pid ? {...p, name: updated.name} : p);
+    if(pid){
+      const u=await apiFetch(`/projects/${pid}`,{method:'PUT',body:JSON.stringify({name})});
+      projects=projects.map(p=>p.id===pid?{...p,name:u.name}:p);
+      const si=scopes.findIndex(s=>s.project_id===pid);
+      if(si>=0)scopes[si].project_name=u.name;
     } else {
-      const created = await apiFetch('/projects', {method:'POST', body:JSON.stringify({name})});
-      created.segments = [];
-      projects.push(created);
-      collapsed.add(created.id);
+      const c=await apiFetch('/projects',{method:'POST',body:JSON.stringify({name})});
+      c.segments=[]; projects.push(c); collapsed.add(c.id);
+      scopes.push({project_id:c.id,project_name:c.name,scope:null});
     }
-    closeModal(); render(); toast('Projeto salvo.');
-  } catch(e) { toast(e.message, true); }
+    closeModal(); calRender(); if(currentTab==='scope')scopeRenderList();
+    toast('Projeto salvo.');
+  } catch(e){toast(e.message,true);}
   setSyncStatus('');
 }
-
 async function deleteProject(pid) {
-  if (!confirm('Excluir este projeto e todos os seus blocos?')) return;
+  if(!confirm('Excluir este projeto e todos os seus dados?'))return;
   setSyncStatus('Salvando...');
   try {
-    await apiFetch(`/projects/${pid}`, {method:'DELETE'});
-    projects = projects.filter(p => p.id !== pid);
+    await apiFetch(`/projects/${pid}`,{method:'DELETE'});
+    projects=projects.filter(p=>p.id!==pid);
+    scopes=scopes.filter(s=>s.project_id!==pid);
     collapsed.delete(pid);
-    render(); toast('Projeto excluído.');
-  } catch(e) { toast(e.message, true); }
+    if(currentScopeProject===pid){currentScopeProject=null;document.getElementById('scope-detail').innerHTML='<div class="state-msg">Selecione um projeto</div>';}
+    calRender(); if(currentTab==='scope')scopeRenderList();
+    toast('Projeto excluído.');
+  } catch(e){toast(e.message,true);}
   setSyncStatus('');
 }
 
 // ── SEGMENT MODAL ──
-function openSegModal(pid, sid) {
-  const p = projects.find(x => x.id === pid);
-  const s = sid ? p.segments.find(x => x.id === sid) : null;
-  const startVal = s ? fixDate(s.start_date) : '';
-  const endVal   = s ? fixDate(s.end_date)   : '';
-
-  modal(`${s ? 'Editar' : 'Novo'} bloco${s ? '' : ' — ' + esc(p.name)}`, `
-    <div class="field"><label>Rótulo</label>
-      <input type="text" id="m-label" value="${s ? esc(s.label) : ''}" placeholder="Ex: Sprint 1, Revisão, Fase 2...">
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Início</label><input type="date" id="m-start" value="${startVal}"></div>
-      <div class="field"><label>Fim</label><input type="date" id="m-end" value="${endVal}"></div>
-    </div>
-    <div class="field"><label>Status</label>
-      <select id="m-status">
-        ${['planejado','em andamento','concluído','atrasado'].map(v =>
-          `<option value="${v}"${s && s.status === v ? ' selected' : ''}>${v[0].toUpperCase()+v.slice(1)}</option>`
-        ).join('')}
-      </select>
-    </div>`,
-    `<div>${s ? `<button class="btn btn-danger btn-sm" onclick="deleteSeg(${pid},${sid})">Excluir bloco</button>` : '<span></span>'}</div>
-     <div style="display:flex;gap:8px">
-       <button class="btn" onclick="closeModal()">Cancelar</button>
-       <button class="btn btn-primary" onclick="saveSeg(${pid},${sid||'null'})">Salvar</button>
-     </div>`
+function openSegModal(pid,sid) {
+  const p=projects.find(x=>x.id===pid);
+  const s=sid?p.segments.find(x=>x.id===sid):null;
+  const sv=s?fixDate(s.start_date):'', ev=s?fixDate(s.end_date):'';
+  modal(`${s?'Editar':'Novo'} bloco${s?'':' — '+esc(p.name)}`,
+    `<div class="field"><label>Rótulo</label><input type="text" id="m-label" value="${s?esc(s.label):''}" placeholder="Ex: Sprint 1..."></div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+       <div class="field" style="margin:0"><label>Início</label><input type="date" id="m-start" value="${sv}" style="width:100%"></div>
+       <div class="field" style="margin:0"><label>Fim</label><input type="date" id="m-end" value="${ev}" style="width:100%"></div>
+     </div>
+     <div class="field" style="margin-top:12px"><label>Status</label><select id="m-status" style="width:100%">${['planejado','em andamento','concluído','atrasado'].map(v=>`<option value="${v}"${s&&s.status===v?' selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}</select></div>`,
+    `<div>${s?`<button class="btn btn-danger btn-sm" onclick="deleteSeg(${pid},${sid})">Excluir</button>`:'<span></span>'}</div>
+     <div style="display:flex;gap:8px"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveSeg(${pid},${sid||'null'})">Salvar</button></div>`
   );
-  setTimeout(() => document.getElementById('m-label').focus(), 50);
+  setTimeout(()=>document.getElementById('m-label').focus(),50);
 }
-
-async function saveSeg(pid, sid) {
-  const label      = document.getElementById('m-label').value.trim();
-  const start_date = document.getElementById('m-start').value;
-  const end_date   = document.getElementById('m-end').value;
-  const status     = document.getElementById('m-status').value;
-  if (!label || !start_date || !end_date) return;
+async function saveSeg(pid,sid) {
+  const label=document.getElementById('m-label').value.trim();
+  const start_date=document.getElementById('m-start').value;
+  const end_date=document.getElementById('m-end').value;
+  const status=document.getElementById('m-status').value;
+  if(!label||!start_date||!end_date)return;
   setSyncStatus('Salvando...');
   try {
-    const p = projects.find(x => x.id === pid);
-    if (sid) {
-      const updated = await apiFetch(`/segments/${sid}`, {method:'PUT', body:JSON.stringify({label,start_date,end_date,status})});
-      updated.start_date = fixDate(updated.start_date);
-      updated.end_date   = fixDate(updated.end_date);
-      p.segments = p.segments.map(s => s.id === sid ? updated : s);
+    const p=projects.find(x=>x.id===pid);
+    if(sid){
+      const u=await apiFetch(`/segments/${sid}`,{method:'PUT',body:JSON.stringify({label,start_date,end_date,status})});
+      u.start_date=fixDate(u.start_date); u.end_date=fixDate(u.end_date);
+      p.segments=p.segments.map(s=>s.id===sid?u:s);
     } else {
-      const created = await apiFetch(`/projects/${pid}/segments`, {method:'POST', body:JSON.stringify({label,start_date,end_date,status})});
-      created.start_date = fixDate(created.start_date);
-      created.end_date   = fixDate(created.end_date);
-      p.segments.push(created);
+      const c=await apiFetch(`/projects/${pid}/segments`,{method:'POST',body:JSON.stringify({label,start_date,end_date,status})});
+      c.start_date=fixDate(c.start_date); c.end_date=fixDate(c.end_date);
+      p.segments.push(c);
     }
-    closeModal(); render(); toast('Bloco salvo.');
-  } catch(e) { toast(e.message, true); }
+    closeModal(); calRender(); toast('Bloco salvo.');
+  } catch(e){toast(e.message,true);}
   setSyncStatus('');
 }
-
-async function deleteSeg(pid, sid) {
+async function deleteSeg(pid,sid) {
   setSyncStatus('Salvando...');
   try {
-    await apiFetch(`/segments/${sid}`, {method:'DELETE'});
-    const p = projects.find(x => x.id === pid);
-    p.segments = p.segments.filter(s => s.id !== sid);
-    closeModal(); render(); toast('Bloco excluído.');
-  } catch(e) { toast(e.message, true); }
+    await apiFetch(`/segments/${sid}`,{method:'DELETE'});
+    const p=projects.find(x=>x.id===pid);
+    p.segments=p.segments.filter(s=>s.id!==sid);
+    closeModal(); calRender(); toast('Bloco excluído.');
+  } catch(e){toast(e.message,true);}
   setSyncStatus('');
 }
 
-// ── UTILS ──
-function modal(title, body, actions) {
-  document.getElementById('modal-box').innerHTML = `
-    <div class="modal-title">${title}</div>${body}
-    <div class="modal-actions">${actions}</div>`;
+// ══════════════════════════════════════════
+// SCOPE TAB
+// ══════════════════════════════════════════
+function scopeFilterList() {
+  const q=document.getElementById('scope-search').value.toLowerCase();
+  const items=document.querySelectorAll('.proj-list-item');
+  items.forEach(el=>{el.style.display=el.dataset.name.includes(q)?'':'none';});
+}
+
+function scopeRenderList() {
+  const header=document.getElementById('scope-list-header');
+  header.textContent=`Projetos (${projects.length})`;
+  const list=document.getElementById('scope-proj-list');
+  if(!projects.length){list.innerHTML='<div class="state-msg" style="padding:24px">Nenhum projeto</div>';return;}
+  list.innerHTML=projects.map(p=>{
+    const sc=scopes.find(s=>s.project_id===p.id);
+    const status=sc?.scope?.status||'planejado';
+    const dotColors={'em andamento':'#AFA9EC','planejado':'#85B7EB','concluído':'#5DCAA5','atrasado':'#F09595'};
+    const segsCount=p.segments.length;
+    return`<div class="proj-list-item${currentScopeProject===p.id?' active':''}" onclick="selectScopeProject(${p.id})" data-name="${esc(p.name.toLowerCase())}">
+      <div class="proj-dot" style="background:${dotColors[status]||'#85B7EB'}"></div>
+      <span class="proj-list-name" title="${esc(p.name)}">${esc(p.name)}</span>
+      <span class="proj-list-count">${segsCount}</span>
+    </div>`;
+  }).join('');
+}
+
+async function selectScopeProject(pid) {
+  if(scopeEditing&&!confirm('Descartar alterações não salvas?'))return;
+  scopeEditing=false; scopeSearchOpen=false;
+  currentScopeProject=pid;
+  scopeRenderList();
+  await scopeLoadAndRender(pid);
+}
+
+async function scopeLoadAndRender(pid) {
+  document.getElementById('scope-detail').innerHTML='<div class="state-msg">Carregando...</div>';
+  try {
+    const data=await apiFetch(`/scopes/${pid}`);
+    const idx=scopes.findIndex(s=>s.project_id===pid);
+    if(idx>=0)scopes[idx]=data; else scopes.push(data);
+    scopeRenderDetail();
+  } catch(e){document.getElementById('scope-detail').innerHTML=`<div class="error-msg">${e.message}</div>`;}
+}
+
+function getScopeData(pid) { return scopes.find(s=>s.project_id===pid)||null; }
+function getProject(pid) { return projects.find(p=>p.id===pid)||null; }
+
+function scopeRenderDetail() {
+  if(!currentScopeProject){document.getElementById('scope-detail').innerHTML='<div class="state-msg">Selecione um projeto</div>';return;}
+  const pid=currentScopeProject;
+  const proj=getProject(pid);
+  const data=getScopeData(pid);
+  const sc=data?.scope||{};
+  const objs=sc.objectives||[];
+  const risks=sc.risks||[];
+  const team=sc.team||[];
+  const status=sc.status||'planejado';
+  const prio=PRIO[sc.prioridade||'media'];
+  const orcTotal=parseFloat(sc.orc_total||0);
+  const orcGasto=parseFloat(sc.orc_gasto||0);
+  const orcPct=orcTotal>0?Math.round(orcGasto/orcTotal*100):0;
+  const orcColor=orcPct>90?'var(--red)':orcPct>70?'var(--amber)':'var(--teal)';
+  const segs=proj?.segments||[];
+  const startDate=segs.length?segs.reduce((a,b)=>a.start_date<b.start_date?a:b).start_date:null;
+  const endDate=segs.length?segs.reduce((a,b)=>a.end_date>b.end_date?a:b).end_date:null;
+
+  const objHTML=objs.length?objs.map(o=>`
+    <div class="obj-item ${o.done?'done':'pending'}">
+      <div class="obj-check">${o.done?'✓':''}</div>${esc(o.text)}
+    </div>`).join(''):'<div style="font-size:13px;color:var(--hint)">Nenhum objetivo cadastrado.</div>';
+
+  const riskHTML=risks.length?risks.map(r=>`
+    <div class="risk-item">
+      <span class="risk-badge rb-${r.nivel}">${RISK_LABEL[r.nivel]}</span>
+      <span class="risk-text">${esc(r.text)}</span>
+    </div>`).join(''):'<div style="font-size:13px;color:var(--hint)">Nenhum risco cadastrado.</div>';
+
+  const teamHTML=team.length?team.map((m,i)=>`
+    <div class="team-member">
+      <div class="avatar">${initials(m.name)}</div>
+      <div class="member-info"><div class="member-name">${esc(m.name)}</div><div class="member-role">${esc(m.role||'')}</div></div>
+      <button class="member-remove" onclick="scopeRemoveMember(${m.id})" title="Remover">✕</button>
+    </div>`).join(''):'<div style="font-size:13px;color:var(--hint);margin-bottom:8px">Nenhum membro ainda.</div>';
+
+  document.getElementById('scope-detail').innerHTML=`
+    <div class="scope-detail-header">
+      <div>
+        <div class="scope-detail-title">${esc(proj?.name||'')}</div>
+        <div class="scope-detail-sub">Atualizado recentemente</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="badge ${BADGE[status]||'b-planejado'}">${STATUS_LABEL[status]||status}</span>
+        <button class="btn" onclick="scopeStartEdit()">✎ Editar</button>
+      </div>
+    </div>
+    <div class="scope-detail-body">
+
+      <div class="sec">
+        <div class="sec-title">ℹ Informações gerais</div>
+        <div class="ig3" style="margin-bottom:8px">
+          <div class="icard"><div class="ilabel">Início</div><div class="ivalue">${startDate?fmtDate(startDate):'—'}</div></div>
+          <div class="icard"><div class="ilabel">Término previsto</div><div class="ivalue">${endDate?fmtDate(endDate):'—'}</div></div>
+          <div class="icard"><div class="ilabel">Progresso</div><div class="ivalue" style="color:var(--purple)">${sc.progresso||0}% concluído</div></div>
+        </div>
+        <div class="ig2">
+          <div class="icard"><div class="ilabel">Responsável</div><div class="ivalue">${esc(sc.responsavel||'—')}</div></div>
+          <div class="icard"><div class="ilabel">Cliente</div><div class="ivalue">${esc(sc.cliente||'—')}</div></div>
+          <div class="icard"><div class="ilabel">Prioridade</div><div class="ivalue ${prio.cls}"><div class="prio-dot" style="background:${prio.dot}"></div>${prio.label}</div></div>
+          <div class="icard"><div class="ilabel">Blocos</div><div class="ivalue">${segs.length} fase${segs.length!==1?'s':''}</div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">💰 Orçamento</div>
+        <div class="orc-box">
+          <div class="orc-row">
+            <div><div class="ilabel">Total aprovado</div><div class="orc-value">${fmt(orcTotal)}</div></div>
+            <div style="text-align:right"><div class="ilabel">Gasto até agora</div><div class="orc-value" style="color:${orcColor}">${fmt(orcGasto)}</div></div>
+          </div>
+          <div class="prog-bg"><div class="prog-fill" style="width:${orcPct}%;background:${orcColor}"></div></div>
+          <div class="prog-labels"><span>${orcPct}% utilizado</span><span>Saldo: ${fmt(orcTotal-orcGasto)}</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">📄 Descrição</div>
+        <div class="desc-box">${esc(sc.descricao)||'<span style="color:var(--hint)">Nenhuma descrição cadastrada.</span>'}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">🎯 Objetivos</div>
+        <div class="obj-list">${objHTML}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">⚠ Riscos</div>
+        <div class="risk-list">${riskHTML}</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">👥 Equipe</div>
+        <div class="team-list" id="scope-team-list">${teamHTML}</div>
+        <button class="add-team-btn" onclick="scopeToggleSearch()">+ Adicionar membro</button>
+        <div id="scope-search-box" style="display:none">
+          <div class="team-search-box">
+            <div class="team-search-input">
+              <span style="color:var(--hint);font-size:13px">🔍</span>
+              <input type="text" placeholder="Nome da pessoa..." oninput="scopeSearchFilter(this.value)" id="scope-member-search">
+            </div>
+            <div id="scope-search-results" style="max-height:180px;overflow-y:auto"></div>
+            <div class="team-add-manual">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:500">Adicionar manualmente</div>
+              <div class="team-add-manual-row">
+                <input type="text" id="manual-name" placeholder="Nome">
+                <input type="text" id="manual-role" placeholder="Cargo">
+                <button class="btn btn-primary btn-sm" onclick="scopeAddManual()">Adicionar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>`;
+  scopeSearchFilter('');
+}
+
+function scopeToggleSearch() {
+  scopeSearchOpen=!scopeSearchOpen;
+  const box=document.getElementById('scope-search-box');
+  if(box)box.style.display=scopeSearchOpen?'block':'none';
+  if(scopeSearchOpen){scopeSearchFilter('');setTimeout(()=>{const i=document.getElementById('scope-member-search');if(i)i.focus();},50);}
+}
+
+function scopeSearchFilter(q) {
+  const data=getScopeData(currentScopeProject);
+  const teamNames=(data?.scope?.team||[]).map(m=>m.name.toLowerCase());
+  const container=document.getElementById('scope-search-results');
+  if(!container)return;
+  if(!q.trim()){container.innerHTML='<div style="padding:8px 12px;font-size:12px;color:var(--hint)">Digite para buscar ou use o formulário abaixo</div>';return;}
+  container.innerHTML='<div style="padding:8px 12px;font-size:12px;color:var(--hint)">Use o formulário abaixo para adicionar</div>';
+}
+
+async function scopeAddManual() {
+  const name=document.getElementById('manual-name').value.trim();
+  const role=document.getElementById('manual-role').value.trim();
+  if(!name)return;
+  setSyncStatus('Salvando...');
+  try {
+    await apiFetch(`/scopes/${currentScopeProject}/team`,{method:'POST',body:JSON.stringify({name,role})});
+    await scopeLoadAndRender(currentScopeProject);
+    scopeSearchOpen=false;
+    toast(`${name} adicionado.`);
+  } catch(e){toast(e.message,true);}
+  setSyncStatus('');
+}
+
+async function scopeRemoveMember(mid) {
+  setSyncStatus('Salvando...');
+  try {
+    await apiFetch(`/scopes/${currentScopeProject}/team/${mid}`,{method:'DELETE'});
+    await scopeLoadAndRender(currentScopeProject);
+    toast('Membro removido.');
+  } catch(e){toast(e.message,true);}
+  setSyncStatus('');
+}
+
+// ── SCOPE EDIT ──
+function scopeStartEdit() {
+  const data=getScopeData(currentScopeProject);
+  const sc=data?.scope||{};
+  scopeEditing=true;
+  scopeEditState={
+    descricao:sc.descricao||'',responsavel:sc.responsavel||'',cliente:sc.cliente||'',
+    prioridade:sc.prioridade||'media',status:sc.status||'planejado',
+    progresso:sc.progresso||0,orc_total:sc.orc_total||0,orc_gasto:sc.orc_gasto||0,
+    objectives:(sc.objectives||[]).map(o=>({...o})),
+    risks:(sc.risks||[]).map(r=>({...r})),
+  };
+  scopeRenderEdit();
+}
+
+function scopeRenderEdit() {
+  const pid=currentScopeProject;
+  const proj=getProject(pid);
+  const es=scopeEditState;
+
+  const objInputs=es.objectives.map((o,i)=>`
+    <div class="obj-edit-row">
+      <input type="checkbox" ${o.done?'checked':''} onchange="seObj(${i},'done',this.checked)">
+      <input type="text" value="${esc(o.text)}" oninput="seObj(${i},'text',this.value)" placeholder="Objetivo...">
+      <button onclick="seRemoveObj(${i})">✕</button>
+    </div>`).join('');
+
+  const riskInputs=es.risks.map((r,i)=>`
+    <div class="risk-edit-row">
+      <select onchange="seRisk(${i},'nivel',this.value)">
+        <option value="alto" ${r.nivel==='alto'?'selected':''}>Alto</option>
+        <option value="medio" ${r.nivel==='medio'?'selected':''}>Médio</option>
+        <option value="baixo" ${r.nivel==='baixo'?'selected':''}>Baixo</option>
+      </select>
+      <input type="text" value="${esc(r.text)}" oninput="seRisk(${i},'text',this.value)" placeholder="Descrição do risco...">
+      <button onclick="seRemoveRisk(${i})">✕</button>
+    </div>`).join('');
+
+  document.getElementById('scope-detail').innerHTML=`
+    <div class="scope-detail-header">
+      <div>
+        <div class="scope-detail-title">${esc(proj?.name||'')}</div>
+        <div class="scope-detail-sub" style="color:var(--purple)">Modo de edição</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-danger" onclick="scopeCancelEdit()">Cancelar</button>
+        <button class="btn btn-primary" onclick="scopeSaveEdit()">✓ Salvar</button>
+      </div>
+    </div>
+    <div class="edit-banner">✏ Editando escopo — as alterações só são salvas ao clicar em Salvar</div>
+    <div class="scope-detail-body">
+
+      <div class="sec">
+        <div class="sec-title">ℹ Informações gerais</div>
+        <div class="field"><label>Responsável</label><input type="text" value="${esc(es.responsavel)}" oninput="scopeEditState.responsavel=this.value" placeholder="Nome do responsável"></div>
+        <div class="field"><label>Cliente</label><input type="text" value="${esc(es.cliente)}" oninput="scopeEditState.cliente=this.value" placeholder="Ex: Interno — Marketing"></div>
+        <div class="field-row">
+          <div class="field" style="margin:0"><label>Status</label>
+            <select onchange="scopeEditState.status=this.value" style="width:100%;height:34px">
+              <option value="planejado" ${es.status==='planejado'?'selected':''}>Planejado</option>
+              <option value="em andamento" ${es.status==='em andamento'?'selected':''}>Em andamento</option>
+              <option value="concluído" ${es.status==='concluído'?'selected':''}>Concluído</option>
+              <option value="atrasado" ${es.status==='atrasado'?'selected':''}>Atrasado</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0"><label>Prioridade</label>
+            <select onchange="scopeEditState.prioridade=this.value" style="width:100%;height:34px">
+              <option value="alta" ${es.prioridade==='alta'?'selected':''}>Alta</option>
+              <option value="media" ${es.prioridade==='media'?'selected':''}>Média</option>
+              <option value="baixa" ${es.prioridade==='baixa'?'selected':''}>Baixa</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Progresso (%)</label><input type="number" min="0" max="100" value="${es.progresso}" oninput="scopeEditState.progresso=parseInt(this.value)||0" style="width:100px"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">💰 Orçamento</div>
+        <div class="field-row">
+          <div class="field" style="margin:0"><label>Total aprovado (R$)</label><input type="number" value="${es.orc_total}" oninput="scopeEditState.orc_total=parseFloat(this.value)||0" style="width:100%"></div>
+          <div class="field" style="margin:0"><label>Gasto até agora (R$)</label><input type="number" value="${es.orc_gasto}" oninput="scopeEditState.orc_gasto=parseFloat(this.value)||0" style="width:100%"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">📄 Descrição</div>
+        <div class="field" style="margin:0"><textarea oninput="scopeEditState.descricao=this.value" rows="4" style="width:100%;height:80px">${esc(es.descricao)}</textarea></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">🎯 Objetivos</div>
+        <div id="se-obj-list">${objInputs}</div>
+        <button class="add-row-btn" onclick="seAddObj()">+ Adicionar objetivo</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec">
+        <div class="sec-title">⚠ Riscos</div>
+        <div id="se-risk-list">${riskInputs}</div>
+        <button class="add-row-btn" onclick="seAddRisk()">+ Adicionar risco</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:4px">
+        <button class="btn btn-danger" onclick="scopeCancelEdit()">Cancelar</button>
+        <button class="btn btn-primary" onclick="scopeSaveEdit()">✓ Salvar alterações</button>
+      </div>
+    </div>`;
+}
+
+function seObj(i,k,v){scopeEditState.objectives[i][k]=v;}
+function seRemoveObj(i){scopeEditState.objectives.splice(i,1);scopeRenderEdit();}
+function seAddObj(){scopeEditState.objectives.push({done:false,text:''});scopeRenderEdit();setTimeout(()=>{const els=document.querySelectorAll('.obj-edit-row input[type=text]');if(els.length)els[els.length-1].focus();},50);}
+function seRisk(i,k,v){scopeEditState.risks[i][k]=v;}
+function seRemoveRisk(i){scopeEditState.risks.splice(i,1);scopeRenderEdit();}
+function seAddRisk(){scopeEditState.risks.push({nivel:'medio',text:''});scopeRenderEdit();setTimeout(()=>{const els=document.querySelectorAll('.risk-edit-row input[type=text]');if(els.length)els[els.length-1].focus();},50);}
+
+async function scopeSaveEdit() {
+  setSyncStatus('Salvando...');
+  const es=scopeEditState;
+  try {
+    await apiFetch(`/scopes/${currentScopeProject}`,{method:'PUT',body:JSON.stringify({
+      descricao:es.descricao,responsavel:es.responsavel,cliente:es.cliente,
+      prioridade:es.prioridade,status:es.status,progresso:es.progresso,
+      orc_total:es.orc_total,orc_gasto:es.orc_gasto,
+      objectives:es.objectives,risks:es.risks,
+    })});
+    scopeEditing=false;
+    await scopeLoadAndRender(currentScopeProject);
+    scopeRenderList();
+    toast('Escopo salvo.');
+  } catch(e){toast(e.message,true);}
+  setSyncStatus('');
+}
+
+function scopeCancelEdit(){scopeEditing=false;scopeRenderDetail();}
+
+// ── MODAL UTIL ──
+function modal(title,body,actions){
+  document.getElementById('modal-box').innerHTML=`<div class="modal-title">${title}</div>${body}<div class="modal-actions">${actions}</div>`;
   document.getElementById('overlay').classList.add('open');
 }
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function toast(msg, err=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast'+(err?' error':''); t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-function setSyncStatus(msg) { document.getElementById('sync-status').textContent = msg; }
-function showError(msg) {
-  document.getElementById('error-banner').innerHTML = msg ? `<div class="error-msg">${msg}</div>` : '';
-}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
 
-document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) closeModal();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+// ── UTILS ──
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(err?' err':''); t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function setSyncStatus(msg){document.getElementById('sync-status').textContent=msg;}
+
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===document.getElementById('overlay'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 initYearSelectors();
 load();
