@@ -389,7 +389,10 @@ function fixDate(v){if(!v)return'';const d=new Date(v);return isNaN(d)?v:d.toISO
 function fmtDate(d){if(!d)return'';const[y,m,dd]=d.split('-');const ms=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return`${parseInt(dd)} ${ms[parseInt(m)-1]} ${y}`;}
 function fmt(n){return'R$ '+Number(n||0).toLocaleString('pt-BR');}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function initials(name){return(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function initials(name){
+  const local=(name||'?').split('@')[0]; // pega só a parte antes do @
+  return local.split('.').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
 
 function calRender() {
   const q=document.getElementById('cal-search').value.toLowerCase();
@@ -720,9 +723,9 @@ function scopeRenderDetail() {
             </div>
             <div id="scope-search-results" style="max-height:180px;overflow-y:auto"></div>
             <div class="team-add-manual">
-              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:500">Adicionar manualmente</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:500">Adicionar por email</div>
               <div class="team-add-manual-row">
-                <input type="text" id="manual-name" placeholder="Nome">
+                <input type="email" id="manual-name" placeholder="email@empresa.com">
                 <input type="text" id="manual-role" placeholder="Cargo">
                 <button class="btn btn-primary btn-sm" onclick="scopeAddManual()">Adicionar</button>
               </div>
