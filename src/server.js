@@ -1,9 +1,10 @@
 require('dotenv').config();
-const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
+const express    = require('express');
+const cors       = require('cors');
+const path       = require('path');
 const { initDB } = require('./db');
-const routes  = require('./routes');
+const routes     = require('./routes');
+const scopeRoutes = require('./scope-routes');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -12,8 +13,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', routes);
+app.use('/api/scopes', scopeRoutes);
 
-// Fallback: qualquer rota não-API serve o index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
