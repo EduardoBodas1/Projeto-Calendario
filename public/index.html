@@ -333,6 +333,22 @@
   </div>
 </div>
 
+
+
+<!-- USERS TAB -->
+<div id="view-users" style="display:none">
+  <div class="main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:18px;font-weight:600">Gestão de usuários</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px">Somente admins têm acesso a esta área</div>
+      </div>
+      <button class="btn btn-primary" onclick="openUserModal()">+ Novo usuário</button>
+    </div>
+    <div class="panel" id="users-panel"><div class="state-msg">Carregando...</div></div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="overlay" id="overlay"><div class="modal" id="modal-box"></div></div>
 <div class="toast" id="toast"></div>
@@ -398,9 +414,11 @@ function switchTab(tab) {
   currentTab = tab;
   document.getElementById('tab-cal').classList.toggle('active', tab==='cal');
   document.getElementById('tab-scope').classList.toggle('active', tab==='scope');
-  document.getElementById('view-cal').style.display = tab==='cal' ? '' : 'none';
+  document.getElementById('view-cal').style.display   = tab==='cal'   ? '' : 'none';
   document.getElementById('view-scope').style.display = tab==='scope' ? '' : 'none';
+  document.getElementById('view-users').style.display = tab==='users' ? '' : 'none';
   if (tab==='scope') { scopeRenderList(); if(currentScopeProject) scopeRenderDetail(); }
+  if (tab==='users') loadUsers();
 }
 
 // ══════════════════════════════════════════
@@ -483,6 +501,7 @@ function showLogin() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('view-cal').style.display = 'none';
   document.getElementById('view-scope').style.display = 'none';
+  document.getElementById('view-users').style.display = 'none';
   setTimeout(() => document.getElementById('login-email').focus(), 50);
 }
 
@@ -512,6 +531,120 @@ async function doLogin() {
 function doLogout() {
   localStorage.removeItem('token'); sessionStorage.removeItem('token');
   currentUser = null; showLogin();
+}
+
+// ── USERS ──
+let users = [];
+
+async function loadUsers() {
+  document.getElementById('users-panel').innerHTML = '<div class="state-msg">Carregando...</div>';
+  try {
+    users = await apiFetch('/auth/users');
+    renderUsers();
+  } catch(e) { document.getElementById('users-panel').innerHTML = `<div class="error-msg">${e.message}</div>`; }
+}
+
+function renderUsers() {
+  if (!users.length) {
+    document.getElementById('users-panel').innerHTML = '<div class="state-msg">Nenhum usuário cadastrado.</div>';
+    return;
+  }
+  const rows = users.map(u => `
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:12px 16px">
+        <div style="font-size:13px;font-weight:500">${esc(u.name)}</div>
+      </td>
+      <td style="padding:12px 16px;font-size:13px;color:var(--muted)">${esc(u.email)}</td>
+      <td style="padding:12px 16px">
+        <span class="badge ${u.role==='admin'?'b-andamento':'b-planejado'}">${u.role==='admin'?'Admin':'Usuário'}</span>
+      </td>
+      <td style="padding:12px 16px">
+        <span class="badge ${u.active?'b-concluido':'b-atrasado'}">${u.active?'Ativo':'Inativo'}</span>
+      </td>
+      <td style="padding:12px 16px">
+        <div style="display:flex;gap:6px;justify-content:flex-end">
+          <button class="btn btn-sm" onclick="openUserModal(${u.id})">✎ Editar</button>
+          ${u.id !== currentUser.id ? `<button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+
+  document.getElementById('users-panel').innerHTML = `
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr style="background:var(--surface2);border-bottom:1px solid var(--border)">
+          <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Nome</th>
+          <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Email</th>
+          <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Perfil</th>
+          <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Status</th>
+          <th style="padding:10px 16px"></th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function openUserModal(uid) {
+  const u = uid ? users.find(x => x.id === uid) : null;
+  modal(`${u ? 'Editar' : 'Novo'} usuário`, `
+    <div class="field"><label>Nome</label><input type="text" id="u-name" value="${u?esc(u.name):''}" placeholder="Nome completo" style="width:100%"></div>
+    <div class="field"><label>Email</label><input type="email" id="u-email" value="${u?esc(u.email):''}" placeholder="email@empresa.com" style="width:100%"></div>
+    <div class="field"><label>${u?'Nova senha (deixe em branco para manter)':'Senha'}</label><input type="password" id="u-password" placeholder="${u?'••••••••':'Mínimo 6 caracteres'}" style="width:100%"></div>
+    <div class="field-row">
+      <div class="field" style="margin:0"><label>Perfil</label>
+        <select id="u-role" style="width:100%;height:34px">
+          <option value="user" ${u&&u.role==='user'?'selected':''}>Usuário</option>
+          <option value="admin" ${u&&u.role==='admin'?'selected':''}>Admin</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0"><label>Status</label>
+        <select id="u-active" style="width:100%;height:34px">
+          <option value="1" ${!u||u.active?'selected':''}>Ativo</option>
+          <option value="0" ${u&&!u.active?'selected':''}>Inativo</option>
+        </select>
+      </div>
+    </div>`,
+    `<div></div>
+     <div style="display:flex;gap:8px">
+       <button class="btn" onclick="closeModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="saveUser(${uid||'null'})">Salvar</button>
+     </div>`
+  );
+  setTimeout(() => document.getElementById('u-name').focus(), 50);
+}
+
+async function saveUser(uid) {
+  const name     = document.getElementById('u-name').value.trim();
+  const email    = document.getElementById('u-email').value.trim();
+  const password = document.getElementById('u-password').value;
+  const role     = document.getElementById('u-role').value;
+  const active   = parseInt(document.getElementById('u-active').value);
+  if (!name || !email) return;
+  if (!uid && !password) { toast('Senha obrigatória para novo usuário.', true); return; }
+  setSyncStatus('Salvando...');
+  try {
+    const body = { name, email, role, active, ...(password ? { password } : {}) };
+    if (uid) {
+      const u = await apiFetch(`/auth/users/${uid}`, { method:'PUT', body:JSON.stringify(body) });
+      users = users.map(x => x.id === uid ? u : x);
+    } else {
+      const u = await apiFetch('/auth/users', { method:'POST', body:JSON.stringify(body) });
+      users.push(u);
+    }
+    closeModal(); renderUsers(); toast('Usuário salvo.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
+}
+
+async function deleteUser(uid) {
+  if (!confirm('Excluir este usuário?')) return;
+  setSyncStatus('Salvando...');
+  try {
+    await apiFetch(`/auth/users/${uid}`, { method:'DELETE' });
+    users = users.filter(x => x.id !== uid);
+    renderUsers(); toast('Usuário excluído.');
+  } catch(e) { toast(e.message, true); }
+  setSyncStatus('');
 }
 
 function initYearSelectors() {
@@ -1091,7 +1224,14 @@ function toast(msg,err=false){
   t.textContent=msg; t.className='toast'+(err?' err':''); t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
-function setSyncStatus(msg){document.getElementById('sync-status').textContent=msg;}
+function setSyncStatus(msg){
+  const el = document.getElementById('sync-status');
+  if (!currentUser) { el.textContent = msg; return; }
+  // Preserve user info — only update a dedicated sync span
+  const existing = el.querySelector('#sync-msg');
+  if (existing) { existing.textContent = msg; }
+  else if (msg) { el.insertAdjacentHTML('afterbegin',`<span id="sync-msg" style="margin-right:8px;color:var(--hint)">${msg}</span>`); }
+}
 
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target===document.getElementById('overlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
