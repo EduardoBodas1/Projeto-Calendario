@@ -50,6 +50,20 @@ router.post('/projects', async (req, res) => {
   }
 });
 
+// PUT /api/projects/reorder  ← deve vir ANTES do PUT /api/projects/:id
+router.put('/projects/reorder', async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids obrigatório' });
+  try {
+    await Promise.all(ids.map((id, i) =>
+      pool.query('UPDATE projects SET position = ? WHERE id = ?', [i, id])
+    ));
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // PUT /api/projects/:id
 router.put('/projects/:id', async (req, res) => {
   const { name } = req.body;

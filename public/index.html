@@ -233,6 +233,23 @@
   .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#F7F6F3;font-size:13px;padding:10px 18px;border-radius:var(--radius-sm);opacity:0;pointer-events:none;transition:opacity .2s;z-index:999}
   .toast.show{opacity:1}
   .toast.err{background:var(--red)}
+  
+  .drag-handle {
+    cursor: grab;
+    color: var(--hint);
+    font-size: 14px;
+    padding: 0 3px;
+    opacity: 0;
+    transition: opacity .1s;
+    flex-shrink: 0;
+    line-height: 1;
+    user-select: none;
+  }
+  .project-header:hover .drag-handle { opacity: 1; }
+  .drag-handle:active { cursor: grabbing; }
+  .dragging-row { opacity: 0.4; }
+  .drag-over-top { border-top: 2px solid var(--purple) !important; }
+  .drag-over-bottom { border-bottom: 2px solid var(--purple) !important; }
 </style>
 </head>
 <body>
@@ -366,6 +383,54 @@ function switchTab(tab) {
 // ══════════════════════════════════════════
 // CALENDAR TAB
 // ══════════════════════════════════════════
+
+// ── DRAG & DROP (projetos) ──
+let dragSrc = null;
+
+function onDragStart(e, id) {
+  dragSrc = id;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => e.currentTarget.closest('.row-wrap').classList.add('dragging-row'), 0);
+}
+
+function onDragEnd(e) {
+  document.querySelectorAll('.dragging-row,.drag-over-top,.drag-over-bottom')
+    .forEach(el => el.classList.remove('dragging-row','drag-over-top','drag-over-bottom'));
+}
+
+function onDragOver(e, id) {
+  if (dragSrc === id) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const el = e.currentTarget.closest('.row-wrap');
+  document.querySelectorAll('.drag-over-top,.drag-over-bottom')
+    .forEach(x => x.classList.remove('drag-over-top','drag-over-bottom'));
+  const rect = el.getBoundingClientRect();
+  el.classList.add(e.clientY < rect.top + rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+}
+
+function onDrop(e, targetId) {
+  e.preventDefault();
+  if (dragSrc === targetId) return;
+  document.querySelectorAll('.drag-over-top,.drag-over-bottom')
+    .forEach(el => el.classList.remove('drag-over-top','drag-over-bottom'));
+
+  const el = e.currentTarget.closest('.row-wrap');
+  const rect = el.getBoundingClientRect();
+  const insertBefore = e.clientY < rect.top + rect.height / 2;
+
+  const ids = projects.map(p => p.id);
+  const fromIdx = ids.indexOf(dragSrc);
+  ids.splice(fromIdx, 1);
+  const toIdx = insertBefore ? ids.indexOf(targetId) : ids.indexOf(targetId) + 1;
+  ids.splice(toIdx, 0, dragSrc);
+  projects = ids.map(id => projects.find(p => p.id === id));
+  calRender();
+
+  apiFetch('/projects/reorder', { method:'PUT', body:JSON.stringify({ids}) })
+    .catch(() => toast('Erro ao salvar ordem.', true));
+}
+
 function initYearSelectors() {
   ['year-start','year-end'].forEach(id => {
     const sel = document.getElementById(id); sel.innerHTML='';
@@ -423,13 +488,20 @@ function calRender() {
   filtered.forEach(p=>{
     const isC=collapsed.has(p.id);
     const segs=fs?p.segments.filter(s=>s.status===fs):p.segments;
-    html+=`<div class="row-wrap"><div class="project-header" onclick="toggleCollapse(${p.id})">
-      <div class="project-name-cell">
-        <span class="collapse-arrow" style="transform:rotate(${isC?'0':'90'}deg)">▶</span>
-        <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
-        <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})">✎</button>
-        <button class="icon-btn" onclick="event.stopPropagation();deleteProject(${p.id})">✕</button>
-      </div>
+    html+=`<div class="row-wrap"
+      draggable="true"
+      ondragstart="onDragStart(event,${p.id})"
+      ondragend="onDragEnd(event)"
+      ondragover="onDragOver(event,${p.id})"
+      ondrop="onDrop(event,${p.id})">
+      <div class="project-header" onclick="toggleCollapse(${p.id})">
+        <div class="project-name-cell">
+          <span class="drag-handle" draggable="false" onclick="event.stopPropagation()">⠿</span>
+          <span class="collapse-arrow" style="transform:rotate(${isC?'0':'90'}deg)">▶</span>
+          <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
+          <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})">✎</button>
+          <button class="icon-btn" onclick="event.stopPropagation();deleteProject(${p.id})">✕</button>
+        </div>
       <div class="project-header-grid"><div class="grid-lines" style="${gs}">${gl}</div>${tl}</div>
     </div>`;
     if(!isC){
