@@ -452,6 +452,8 @@ function calRender() {
     ondrop="onDrop(event,'project',${p.id})">
     <div class="project-header" onclick="toggleCollapse(${p.id})">
       <div class="project-name-cell">
+        // DEPOIS
+        <span class="drag-handle" ondragstart="event.stopPropagation()" draggable="false">⠿</span>
         <span class="collapse-arrow" style="transform:rotate(${isC?'0':'90'}deg)">▶</span>
         <span class="project-name" title="${esc(p.name)}">${esc(p.name)}</span>
         <button class="icon-btn" onclick="event.stopPropagation();openProjectModal(${p.id})">✎</button>
