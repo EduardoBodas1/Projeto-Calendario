@@ -13,6 +13,20 @@ const pool = mysql.createPool({
 async function initDB() {
   const conn = await pool.getConnection();
   try {
+
+    // ── Tabela de usuários ──────────────────────────────
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id            INT AUTO_INCREMENT PRIMARY KEY,
+        name          VARCHAR(255) NOT NULL,
+        email         VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role          ENUM('admin','user') DEFAULT 'user',
+        active        TINYINT DEFAULT 1,
+        created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // ── Tabela de projetos ──────────────────────────────
     await conn.query(`
       CREATE TABLE IF NOT EXISTS projects (

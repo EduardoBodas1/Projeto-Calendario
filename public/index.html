@@ -254,6 +254,24 @@
 </head>
 <body>
 
+<!-- TELA DE LOGIN -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px;width:360px;max-width:94vw">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
+      <div class="logo-icon"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="2" rx="1" fill="white" opacity=".9"/><rect x="1" y="7.5" width="8" height="2" rx="1" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2" rx="1" fill="white" opacity=".5"/></svg></div>
+      <span style="font-size:16px;font-weight:600">Gestão de Projetos</span>
+    </div>
+    <div id="login-error" style="display:none;background:var(--red-lt);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px"></div>
+    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="email@empresa.com" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field"><label>Senha</label><input type="password" id="login-password" placeholder="Sua senha" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <input type="checkbox" id="login-remember" style="width:15px;height:15px;accent-color:var(--purple)">
+      <label for="login-remember" style="font-size:13px;color:var(--muted);cursor:pointer">Lembrar neste dispositivo por 30 dias</label>
+    </div>
+    <button class="btn btn-primary" style="width:100%;height:40px;font-size:14px" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
 <header class="app-header">
   <div class="logo">
     <div class="logo-icon">
@@ -344,7 +362,12 @@ let scopeSearchOpen = false;
 
 // ── API ──
 async function apiFetch(path, opts={}) {
-  const res = await fetch(API+path, {headers:{'Content-Type':'application/json'}, ...opts});
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const res = await fetch(API+path, {
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    ...opts
+  });
+  if (res.status === 401) { doLogout(); return; }
   if (!res.ok) { const e = await res.json().catch(()=>({error:'Erro'})); throw new Error(e.error||res.statusText); }
   return res.json();
 }
@@ -429,6 +452,66 @@ function onDrop(e, targetId) {
 
   apiFetch('/projects/reorder', { method:'PUT', body:JSON.stringify({ids}) })
     .catch(() => toast('Erro ao salvar ordem.', true));
+}
+
+// ── AUTH ──
+let currentUser = null;
+
+async function checkAuth() {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  if (!token) { showLogin(); return; }
+  try {
+    const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    currentUser = data.user;
+    document.getElementById('login-screen').style.display = 'none';
+    // Adiciona nome do usuário e botão de sair no header
+    document.getElementById('sync-status').innerHTML = `
+      <span style="margin-right:10px">${currentUser.name}</span>
+      ${currentUser.role==='admin'?'<button class="btn btn-sm" onclick="switchTab(\'users\')" style="margin-right:6px">👥 Usuários</button>':''}
+      <button class="btn btn-sm" onclick="doLogout()">Sair</button>`;
+    load();
+  } catch {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    showLogin();
+  }
+}
+
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('view-cal').style.display = 'none';
+  document.getElementById('view-scope').style.display = 'none';
+  setTimeout(() => document.getElementById('login-email').focus(), 50);
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('login-remember').checked;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Preencha email e senha.'; errEl.style.display = 'block'; return; }
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, remember })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error; errEl.style.display = 'block'; return; }
+    if (remember) localStorage.setItem('token', data.token);
+    else sessionStorage.setItem('token', data.token);
+    currentUser = data.user;
+    document.getElementById('login-screen').style.display = 'none';
+    checkAuth();
+  } catch { errEl.textContent = 'Erro ao conectar.'; errEl.style.display = 'block'; }
+}
+
+function doLogout() {
+  localStorage.removeItem('token'); sessionStorage.removeItem('token');
+  currentUser = null; showLogin();
 }
 
 function initYearSelectors() {
@@ -1014,7 +1097,8 @@ document.getElementById('overlay').addEventListener('click',e=>{if(e.target===do
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 initYearSelectors();
-load();
+checkAuth();
+
 </script>
 </body>
 </html>
