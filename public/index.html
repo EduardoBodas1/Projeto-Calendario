@@ -23,7 +23,7 @@
   body{font-family:'DM Sans',sans-serif;background:url('/bg-hrpath.jpg') center/cover fixed;color:var(--text);min-height:100vh}
 
   /* ── HEADER ── */
-  .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:stretch;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:stretch;justify-content:flex-start;position:sticky;top:0;z-index:50}
   .logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;flex-shrink:0}
   .logo-icon{height:28px;display:flex;align-items:center}
   .logo-icon img{height:28px;width:auto}
@@ -50,8 +50,8 @@
   textarea{height:auto;padding:8px 12px;resize:vertical;line-height:1.6}
   .btn{height:36px;padding:0 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:var(--radius-sm);border:1px solid var(--border-md);background:var(--surface);color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:background .12s;white-space:nowrap}
   .btn:hover{background:var(--surface2)}
-  .btn-primary{background:var(--purple);color:var(--purple-lt);border-color:var(--purple)}
-  .btn-primary:hover{background:#3C3489}
+  .btn-primary{background:#378ADD;color:#fff;border-color:#378ADD}
+  .btn-primary:hover{background:#2B6DB3}
   .btn-danger{background:var(--red-lt);color:var(--red-dk);border-color:rgba(226,75,74,.3)}
   .btn-danger:hover{background:#F7C1C1}
   .btn-sm{height:28px;padding:0 12px;font-size:12px}
@@ -282,7 +282,7 @@
     <div class="tab active" id="tab-cal" onclick="switchTab('cal')">📅 Calendário</div>
     <div class="tab" id="tab-scope" onclick="switchTab('scope')">📋 Escopo de projetos</div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:auto">
     <span id="sync-status" style="font-size:12px;color:var(--hint)"></span>
     <div id="user-info" style="display:none;align-items:center;gap:8px;font-size:13px"></div>
   </div>
@@ -342,8 +342,8 @@
   <div class="main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div>
-        <div style="font-size:18px;font-weight:600">Gestão de usuários</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:2px">Somente admins têm acesso a esta área</div>
+        <div style="font-size:18px;font-weight:600;color:#fff">Gestão de usuários</div>
+        <div style="font-size:13px;color:#fff;opacity:.8;margin-top:2px">Somente admins têm acesso a esta área</div>
       </div>
       <button class="btn btn-primary" onclick="openUserModal()">+ Novo usuário</button>
     </div>
