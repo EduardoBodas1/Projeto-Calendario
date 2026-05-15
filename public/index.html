@@ -398,7 +398,14 @@ async function load() {
     projects = await apiFetch('/projects');
     if (!initialCollapse) { projects.forEach(p=>collapsed.add(p.id)); initialCollapse=true; }
     await loadScopes();
-    switchTab(currentTab || 'cal');
+    // Garante que a aba calendário está visível e renderiza
+    document.getElementById('view-cal').style.display = '';
+    document.getElementById('view-scope').style.display = 'none';
+    document.getElementById('view-users').style.display = 'none';
+    document.getElementById('tab-cal').classList.add('active');
+    document.getElementById('tab-scope').classList.remove('active');
+    currentTab = 'cal';
+    calRender();
     setSyncStatus('');
   } catch(e) {
     document.getElementById('error-banner').innerHTML = `<div class="error-msg">Erro ao conectar: ${e.message}</div>`;
@@ -595,12 +602,7 @@ async function checkAuth() {
     const data = await res.json();
     currentUser = data.user;
     document.getElementById('login-screen').style.display = 'none';
-    currentTab = 'cal';
     document.getElementById('view-cal').style.display = '';
-    document.getElementById('view-scope').style.display = 'none';
-    document.getElementById('view-users').style.display = 'none';
-    document.getElementById('tab-cal').classList.add('active');
-    document.getElementById('tab-scope').classList.remove('active');
     const ui = document.getElementById('user-info');
     ui.style.display = 'flex';
     ui.innerHTML = `
