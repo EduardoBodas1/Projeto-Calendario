@@ -279,8 +279,8 @@
     </div>
   </div>
   <div class="tabs">
-    <div class="tab active" id="tab-cal" onclick="switchTab('cal')">📅 Calendário</div>
-    <div class="tab" id="tab-scope" onclick="switchTab('scope')">📋 Escopo de projetos</div>
+    <div class="tab active" id="tab-cal" onclick="switchTab('cal')">Calendário</div>
+    <div class="tab" id="tab-scope" onclick="switchTab('scope')">Escopo de projetos</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:auto">
     <span id="sync-status" style="font-size:12px;color:var(--hint)"></span>
@@ -748,14 +748,23 @@ function calRender() {
   document.getElementById('cal-panel').innerHTML=html;
 }
 
+function projectStatus(p) {
+  const segs=p.segments;
+  if(!segs.length) return 'planejado';
+  if(segs.some(s=>s.status==='atrasado')) return 'atrasado';
+  if(segs.some(s=>s.status==='em andamento')) return 'em andamento';
+  if(segs.every(s=>s.status==='concluído')) return 'concluído';
+  return 'planejado';
+}
+
 function calRenderSummary(list) {
-  const all=list.flatMap(p=>p.segments);
+  const statuses=list.map(projectStatus);
   document.getElementById('cal-summary').innerHTML=`
     <div class="stat-card"><div class="slabel">Projetos</div><div class="svalue">${list.length}</div></div>
-    <div class="stat-card"><div class="slabel">Em andamento</div><div class="svalue" style="color:var(--purple)">${all.filter(s=>s.status==='em andamento').length}</div></div>
-    <div class="stat-card"><div class="slabel">Concluídos</div><div class="svalue" style="color:var(--teal)">${all.filter(s=>s.status==='concluído').length}</div></div>
-    <div class="stat-card"><div class="slabel">Atrasados</div><div class="svalue" style="color:var(--red)">${all.filter(s=>s.status==='atrasado').length}</div></div>
-    <div class="stat-card"><div class="slabel">Planejados</div><div class="svalue" style="color:var(--blue)">${all.filter(s=>s.status==='planejado').length}</div></div>`;
+    <div class="stat-card"><div class="slabel">Em andamento</div><div class="svalue" style="color:var(--purple)">${statuses.filter(s=>s==='em andamento').length}</div></div>
+    <div class="stat-card"><div class="slabel">Concluídos</div><div class="svalue" style="color:var(--teal)">${statuses.filter(s=>s==='concluído').length}</div></div>
+    <div class="stat-card"><div class="slabel">Atrasados</div><div class="svalue" style="color:var(--red)">${statuses.filter(s=>s==='atrasado').length}</div></div>
+    <div class="stat-card"><div class="slabel">Planejados</div><div class="svalue" style="color:var(--blue)">${statuses.filter(s=>s==='planejado').length}</div></div>`;
 }
 
 function toggleCollapse(pid){
