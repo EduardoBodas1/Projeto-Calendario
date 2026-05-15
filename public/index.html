@@ -784,6 +784,9 @@ function openProjectModal(pid) {
 async function saveProject(pid) {
   const name=document.getElementById('m-name').value.trim();
   if(!name)return;
+  if(!pid && projects.some(p=>p.name.toLowerCase()===name.toLowerCase())){
+    toast(`Já existe um projeto com o nome "${name}".`,true); return;
+  }
   setSyncStatus('Salvando...');
   try {
     if(pid){

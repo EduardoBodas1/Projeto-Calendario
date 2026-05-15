@@ -38,6 +38,8 @@ router.post('/projects', async (req, res) => {
   const { name } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Nome obrigatório' });
   try {
+    const [[existing]] = await pool.query('SELECT id FROM projects WHERE LOWER(name) = LOWER(?)', [name.trim()]);
+    if (existing) return res.status(409).json({ error: `Já existe um projeto com o nome "${name.trim()}"` });
     const [[{ maxPos }]] = await pool.query('SELECT MAX(position) as maxPos FROM projects');
     const [result] = await pool.query(
       'INSERT INTO projects (name, position) VALUES (?, ?)',
