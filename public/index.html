@@ -526,7 +526,13 @@ function openUserModal(uid) {
   modal(`${u ? 'Editar' : 'Novo'} usuário`, `
     <div class="field"><label>Nome</label><input type="text" id="u-name" value="${u?esc(u.name):''}" placeholder="Nome completo" style="width:100%"></div>
     <div class="field"><label>Email</label><input type="email" id="u-email" value="${u?esc(u.email):''}" placeholder="email@empresa.com" style="width:100%"></div>
-    <div class="field"><label>${u?'Nova senha (deixe em branco para manter)':'Senha'}</label><input type="password" id="u-password" placeholder="${u?'••••••••':'Mínimo 6 caracteres'}" style="width:100%"></div>
+    <div class="field">
+      <label>${u?'Nova senha (deixe em branco para manter)':'Senha'}</label>
+      <div style="position:relative">
+        <input type="password" id="u-password" placeholder="${u?'••••••••':'Mínimo 6 caracteres'}" style="width:100%;padding-right:38px">
+        <button type="button" onclick="togglePasswordVisibility()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--hint);font-size:16px;padding:2px;line-height:1" id="toggle-pwd-btn">👁</button>
+      </div>
+    </div>
     <div class="field-row">
       <div class="field" style="margin:0"><label>Perfil</label>
         <select id="u-role" style="width:100%;height:34px">
@@ -600,7 +606,7 @@ async function checkAuth() {
     ui.style.display = 'flex';
     ui.innerHTML = `
       <span style="color:var(--muted)">${currentUser.name}</span>
-      ${currentUser.role==='admin'?'<button class="btn btn-sm" onclick="switchTab(\'users\')">👥 Usuários</button>':''}
+      ${currentUser.role==='admin'?'<button class="btn btn-sm" onclick="switchTab(\'users\')">Usuários</button>':''}
       <button class="btn btn-sm" onclick="doLogout()">Sair</button>`;
     load();
   } catch {
@@ -1217,6 +1223,19 @@ function modal(title,body,actions){
   document.getElementById('modal-box').innerHTML=`<div class="modal-title">${title}</div>${body}<div class="modal-actions">${actions}</div>`;
   document.getElementById('overlay').classList.add('open');
 }
+
+function togglePasswordVisibility() {
+  const input = document.getElementById('u-password');
+  const btn = document.getElementById('toggle-pwd-btn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
 function closeModal(){document.getElementById('overlay').classList.remove('open');}
 
 // ── UTILS ──
