@@ -421,7 +421,8 @@ function switchTab(tab) {
   document.getElementById('view-scope').style.display = tab==='scope' ? '' : 'none';
   document.getElementById('view-users').style.display = tab==='users' ? '' : 'none';
   if (tab==='scope') { scopeRenderList(); if(currentScopeProject) scopeRenderDetail(); }
-  if (tab==='users') loadUsers();
+  if (tab==='users' && currentUser?.role === 'admin') loadUsers();
+  else if (tab==='users') { switchTab('cal'); return; }
 }
 
 // ══════════════════════════════════════════
@@ -479,6 +480,7 @@ function onDrop(e, targetId) {
 let users = [];
 
 async function loadUsers() {
+  if (currentUser?.role !== 'admin') { switchTab('cal'); return; }
   document.getElementById('users-panel').innerHTML = '<div class="state-msg">Carregando...</div>';
   try {
     users = await apiFetch('/auth/users');
