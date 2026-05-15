@@ -290,7 +290,7 @@
 </header>
 
 <!-- CALENDAR TAB -->
-<div id="view-cal">
+<div id="view-cal" style="display:none">
   <div class="main">
     <div class="summary-grid" id="cal-summary"></div>
     <div id="error-banner"></div>
@@ -596,7 +596,12 @@ async function checkAuth() {
     const data = await res.json();
     currentUser = data.user;
     document.getElementById('login-screen').style.display = 'none';
+    currentTab = 'cal';
     document.getElementById('view-cal').style.display = '';
+    document.getElementById('view-scope').style.display = 'none';
+    document.getElementById('view-users').style.display = 'none';
+    document.getElementById('tab-cal').classList.add('active');
+    document.getElementById('tab-scope').classList.remove('active');
     const ui = document.getElementById('user-info');
     ui.style.display = 'flex';
     ui.innerHTML = `
@@ -615,6 +620,7 @@ function showLogin() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('view-cal').style.display = 'none';
   document.getElementById('view-scope').style.display = 'none';
+  document.getElementById('view-users').style.display = 'none';
   setTimeout(() => document.getElementById('login-email').focus(), 50);
 }
 
