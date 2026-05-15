@@ -20,7 +20,7 @@
     --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.04);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  body{font-family:'DM Sans',sans-serif;background:url('/bg-hrpath.jpg') center/cover fixed;color:var(--text);min-height:100vh}
 
   /* ── HEADER ── */
   .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:stretch;justify-content:space-between;position:sticky;top:0;z-index:50}
@@ -256,7 +256,7 @@
 <body>
 
 <!-- TELA DE LOGIN -->
-<div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;align-items:center;justify-content:center">
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:rgba(5,25,65,0.45);z-index:1000;align-items:center;justify-content:center">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px;width:360px;max-width:94vw">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
       <img src="/hrpath-logo.png" alt="HR Path" style="height:36px;width:auto">
