@@ -596,6 +596,7 @@ async function checkAuth() {
     const data = await res.json();
     currentUser = data.user;
     document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('view-cal').style.display = '';
     const ui = document.getElementById('user-info');
     ui.style.display = 'flex';
     ui.innerHTML = `
