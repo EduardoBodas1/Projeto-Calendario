@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestão de Projetos</title>
+<link rel="icon" type="image/png" href="/hrpath-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -24,8 +25,8 @@
   /* ── HEADER ── */
   .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:stretch;justify-content:space-between;position:sticky;top:0;z-index:50}
   .logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;flex-shrink:0}
-  .logo-icon{width:28px;height:28px;background:var(--purple);border-radius:7px;display:flex;align-items:center;justify-content:center}
-  .logo-icon svg{width:16px;height:16px}
+  .logo-icon{height:28px;display:flex;align-items:center}
+  .logo-icon img{height:28px;width:auto}
   .tabs{display:flex;align-items:stretch;gap:0}
   .tab{display:flex;align-items:center;gap:7px;padding:0 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;position:relative;top:1px;white-space:nowrap}
   .tab:hover{color:var(--text)}
@@ -258,8 +259,7 @@
 <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;align-items:center;justify-content:center">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px;width:360px;max-width:94vw">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
-      <div class="logo-icon"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="2" rx="1" fill="white" opacity=".9"/><rect x="1" y="7.5" width="8" height="2" rx="1" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2" rx="1" fill="white" opacity=".5"/></svg></div>
-      <span style="font-size:16px;font-weight:600">Gestão de Projetos</span>
+      <img src="/hrpath-logo.png" alt="HR Path" style="height:36px;width:auto">
     </div>
     <div id="login-error" style="display:none;background:var(--red-lt);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px"></div>
     <div class="field"><label>Usuário</label><input type="email" id="login-email" placeholder="Seu usuário" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()"></div>
@@ -275,9 +275,8 @@
 <header class="app-header">
   <div class="logo">
     <div class="logo-icon">
-      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="2" rx="1" fill="white" opacity=".9"/><rect x="1" y="7.5" width="8" height="2" rx="1" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2" rx="1" fill="white" opacity=".5"/></svg>
+      <img src="/hrpath-logo.png" alt="HR Path">
     </div>
-    Gestão de Projetos
   </div>
   <div class="tabs">
     <div class="tab active" id="tab-cal" onclick="switchTab('cal')">📅 Calendário</div>
