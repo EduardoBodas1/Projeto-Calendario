@@ -228,6 +228,7 @@
   .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
   .legend-dot{width:10px;height:10px;border-radius:3px}
 
+  #view-scope .main{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:16px;margin-bottom:16px}
   .state-msg{padding:48px;text-align:center;font-size:14px;color:var(--hint)}
   .error-msg{padding:16px 20px;font-size:13px;color:var(--red);background:var(--red-lt);border-radius:var(--radius-sm);margin-bottom:14px}
 
@@ -289,7 +290,7 @@
 </header>
 
 <!-- CALENDAR TAB -->
-<div id="view-cal" style="display:none;background:rgba(247,246,243,0.92);min-height:calc(100vh - 56px)">
+<div id="view-cal" style="display:none">
   <div class="main">
     <div class="summary-grid" id="cal-summary"></div>
     <div id="error-banner"></div>
@@ -322,7 +323,7 @@
 </div>
 
 <!-- SCOPE TAB -->
-<div id="view-scope" style="display:none;background:rgba(247,246,243,0.92);min-height:calc(100vh - 56px)">
+<div id="view-scope" style="display:none">
   <div class="main">
     <div class="scope-layout">
       <div class="project-list-panel">
